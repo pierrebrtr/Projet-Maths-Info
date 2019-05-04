@@ -16,12 +16,15 @@ def demarrer(w = 500, h = 500):
 
     main = Application()
     main.canvas.bind("<Button-1>", point)
-    main.canvas.bind("<Button-3>", clear)
+    main.canvas.bind("<Button-3>", Application.clear)
     main.canvas.bind('<Motion>', move)
     main.canvas.old_coords = None
     main.fen.mainloop()
 
     return
+
+
+
 
 
 class Application:
@@ -31,22 +34,39 @@ class Application:
         self.fen = Tk()
         self.fen.title("Projet Maths Info | Paul & Pierre")
 
+        
+
         self.canvas = Canvas(self.fen, bg="white", width=width, height= height)
         self.canvas.configure(cursor="crosshair")
-        self.canvas.pack()
-
-   
-
-        self.canvas.pack()
-
-
-
-def clear(self):
+        self.canvas.pack(side="left")
         
+        self.frame = Frame(self.fen)
+        self.frame.pack(side="right")
+
+        self.textbox = Label(self.frame,text="Menu",font=("Helvetica", 16))
+        self.textbox.grid(row=0,column=1)
+        ##,ipady=100
+        
+
+        self.bouton_trianguler = Button(self.frame, text="Trianguler", bg = "grey",command=triangulerf)
+        self.bouton_trianguler.grid(row=2,column =1,pady=10)
+
+        self.bouton_trianguler = Button(self.frame, text="Effacer", bg = "grey",command=self.clear)
+        self.bouton_trianguler.grid(row=3,column =1,pady=10)
+
+        self.bouton_trianguler = Button(self.frame, text="Quitter", bg = "red",command=self.fen.destroy)
+        self.bouton_trianguler.grid(row=4,column =1,pady=10)
+
+    def clear(self):
         points.clear()
         main.canvas.delete("all")
         main.canvas.bind("<Motion>",move)
         main.canvas.bind("<Button-1>", point)
+    
+
+
+
+        
 
 
 def point(event):
@@ -66,7 +86,6 @@ def polygon(event) :
     main.canvas.unbind("<Button 1>")
     main.canvas.unbind("<Motion>")
     main.canvas.delete("line2")
-    drawT(trianguler(points))
 
    
 
@@ -166,6 +185,10 @@ def drawT(liste):
         main.canvas.create_line(triangle[0][0],triangle[0][1],triangle[1][0],triangle[1][1], tags="triangl", width= 1)
         main.canvas.create_line(triangle[0][0],triangle[0][1],triangle[2][0],triangle[2][1], tags="triangl", width= 1)
         main.canvas.create_line(triangle[1][0],triangle[1][1],triangle[2][0],triangle[2][1], tags="triangl", width= 1)
+
+def triangulerf():
+    if len(points)>=4:
+        drawT(trianguler(points))
 
 
 demarrer()
