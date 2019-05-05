@@ -4,10 +4,11 @@ import time
 
 print("""
       
- _____ ___ _  __  __  _  __ _   ___  
-|_   _| _ \ |/  \|  \| |/ _] | | __| 
-  | | | v / | /\ | | ' | [/\ |_| _|  
-  |_| |_|_\_|_||_|_|\__|\__/___|___| 
+ _____ ___ _  __  __  _  __ _  _ _    __ _____ _  __  __  _  
+|_   _| _ \ |/  \|  \| |/ _] || | |  /  \_   _| |/__\|  \| | 
+  | | | v / | /\ | | ' | [/\ \/ | |_| /\ || | | | \/ | | ' | 
+  |_| |_|_\_|_||_|_|\__|\__/\__/|___|_||_||_| |_|\__/|_|\__| 
+
 
 """)
 
@@ -101,7 +102,6 @@ def polygon(event) :
     main.canvas.delete("line2")
 
    
-
 def move(event):
     x, y = event.x, event.y
     if len(points)>=1:
@@ -202,9 +202,6 @@ def trianguler():
     if len(points)>=4:
         triliste = triangulerbis(points)
         drawT(triliste)
-
-
-
 
 
 def chiffre():
@@ -315,30 +312,37 @@ def coloration():
     index = 0
     print("------")
     recur(0)
-            
-def recur(index):
-    global bliste
-    if len(bliste) > 1:
-        st = []
-        for x in range(len(bliste)):
-            if bliste[x] != "N":
-                if (index != x):
-                    if(segmentation(bliste[index],bliste[x])):
-                        st.append(bliste[x])
-                        print("Triangle n°" + str(x) + " collé à triangle n°" + str(index))
-                        triangle = bliste[x]
-                        colors = ["red","green","blue"]
-                        id = [0,1,2]
-                        for i in range (len(triangle)):
-                            if (triangle[i] in bliste[index]):
-                                colors.remove(main.canvas.itemcget(main.canvas.find_withtag(str(triangle[i][0])+","+str(triangle[i][1])), "fill"))
-                                id.remove(i)
-                        y = id[0]
-                        main.canvas.create_oval( triangle[y][0]- 8, triangle[y][1] - 8, triangle[y][0]+8,triangle[y][1]+8, fill=colors[0],tags=str(triangle[y][0])+","+str(triangle[y][1]),width="2")
-                        bliste[index] = "N"
-                        print("NEXT ->", str(x))
-                        recur(x)
 
+
+subliste = []         
+def recur(index):
+    print("RECURSION AVEC " + str(index))
+    global bliste
+    c = 0
+    for x in range(len(bliste)):
+        if (bliste[x] != "N" and bliste[index] != "N" and index != x):
+            if(segmentation(bliste[index],bliste[x])):
+                c= c +1
+                subliste.append((bliste[x],bliste[index]))
+    print("Nb d'occurences : " + str(c))
+
+    
+    for x in range(len(bliste)):
+        if (bliste[x] != "N" and bliste[index] != "N" and index != x):
+            if(segmentation(bliste[index],bliste[x])):
+                print("Triangle n°" + str(x) + " collé à triangle n°" + str(index))
+                triangle = bliste[x]
+                colors = ["red","green","blue"]
+                ide = [0,1,2]
+                for i in range (len(triangle)):
+                    if (triangle[i] in bliste[index]):
+                        colors.remove(main.canvas.itemcget(main.canvas.find_withtag(str(triangle[i][0])+","+str(triangle[i][1])), "fill"))
+                        ide.remove(i)
+                y = ide[0]
+                main.canvas.create_oval( triangle[y][0]- 8, triangle[y][1] - 8, triangle[y][0]+8,triangle[y][1]+8, fill=colors[0],tags=str(triangle[y][0])+","+str(triangle[y][1]),width="2")
+                bliste[index] = "N"
+                print("NEXT ->", str(x))
+                recur(x)
 
 
 
