@@ -15,7 +15,6 @@ print("""
 points = []
 global triliste
 
-
 def demarrer(w = 500, h = 500):
     global width
     global height
@@ -63,24 +62,31 @@ class Application:
 
         self.bouton_trianguler = Button(self.frame, text="Trianguler", bg = "grey",command=trianguler)
         self.bouton_trianguler.grid(row=2,column =1,pady=10)
+        self.bouton_trianguler.config(state=DISABLED)
 
         self.bouton_coloration = Button(self.frame, text="Coloration", bg = "blue",command=coloration)
         self.bouton_coloration.grid(row=4,column =1,pady=10)
+        self.bouton_coloration.config(state=DISABLED)
 
         self.bouton_clear = Button(self.frame, text="Effacer", bg = "grey",command=self.clear)
         self.bouton_clear.grid(row=5,column =1,pady=10)
+
 
         self.bouton_quitter = Button(self.frame, text="Quitter", bg = "red",command=self.fen.destroy)
         self.bouton_quitter.grid(row=6,column =1,pady=10)
 
         self.bouton_chiffre = Button(self.frame, text="Chiffres", bg = "green",command=chiffre)
         self.bouton_chiffre.grid(row=3,column =1,pady=10)
+        self.bouton_chiffre.config(state=DISABLED)
 
     def clear(self):
         points.clear()
         main.canvas.delete("all")
         main.canvas.bind("<Motion>",move)
         main.canvas.bind("<Button-1>", point)
+        main.bouton_trianguler.config(state=DISABLED)
+        main.bouton_coloration.config(state=DISABLED)
+        main.bouton_chiffre.config(state=DISABLED)
     
 
 def point(event):
@@ -94,12 +100,13 @@ def point(event):
     return points
 
 def polygon(event) :
+    main.canvas.create_line(points[0][0],points[0][1],points[-1][0],points[-1][1], tags="line", width= 1)
     main.canvas.create_polygon(*points, fill='red')
-    main.canvas.create_line(points[0][0],points[0][1],points[-1][0],points[-1][1], tags="line", width= 2)
     main.canvas.tag_raise("line")
     main.canvas.unbind("<Button 1>")
     main.canvas.unbind("<Motion>")
     main.canvas.delete("line2")
+    main.bouton_trianguler.config(state=NORMAL)
 
    
 def move(event):
@@ -110,6 +117,19 @@ def move(event):
             main.canvas.tag_lower("line2")
             main.canvas.coords("line2", points[len(points)-1][0], points[len(points)-1][1], x1, y1)
         main.canvas.old_coords = x, y
+
+
+#-----Triangulation-----#
+
+def gauche(points):
+    n = len(points)
+    x = points[0][0]
+    j = 0
+    for i in range(1,n):
+        if points[i][0] < x :
+            x = points[i][0]
+            j = i
+    return j
 
 def cotedroite(p0,p1,M):
     return (p1[0]-p0[0])*(M[1]-p0[1])-(p1[1]-p0[1])*(M[0]-p0[0])  
@@ -137,16 +157,6 @@ def sommetmax(points,p0,p1,p2,index):
                     j=i
     return j
 
-def gauche(points):
-    n = len(points)
-    x = points[0][0]
-    j = 0
-    for i in range(1,n):
-        if points[i][0] < x :
-            x = points[i][0]
-            j = i
-    return j
-
 def poly(points,start,finish):
     n = len(points)
     p= []
@@ -156,6 +166,7 @@ def poly(points,start,finish):
         i = voisin_sommet(n,i,1)
     p.append(points[finish])
     return p
+
 
 def triangulationb(points,triliste):
     n = len(points)
@@ -202,6 +213,8 @@ def trianguler():
     if len(points)>=4:
         triliste = triangulerbis(points)
         drawT(triliste)
+        main.bouton_chiffre.config(state=NORMAL)
+        main.bouton_coloration.config(state=NORMAL)
 
 
 def chiffre():
@@ -213,8 +226,7 @@ def chiffre():
             y = (liste[i][0][1]+liste[i][1][1]+liste[i][2][1])/3
             main.canvas.create_text(x,y,text=i)
 
-
-colors = ["blue","red","green"]
+#-----Tri-Coloration-----#
 
 def segmentation(t1,t2):
     success = False
@@ -230,31 +242,23 @@ def coloration():
     colors = ["red","green","blue"]
     global bliste,triliste
     bliste = triliste
-    print("------")
-    print("Triangle 1")
     for j in range (0,3):
-        main.canvas.create_oval(bliste[0][j][0] - 8, bliste[0][j][1] - 8, bliste[0][j][0]+8,bliste[0][j][1]+8, fill=colors[j],tags=str(bliste[0][j][0])+","+str(bliste[0][j][1]),width="2")
-        print("Point n°" + str(j + 1) + " : ",main.canvas.itemcget(main.canvas.find_withtag(str(bliste[0][j][0])+","+str(bliste[0][j][1])), "fill"),str(bliste[0][j][0])+","+str(bliste[0][j][1]))
+        main.canvas.create_oval(bliste[0][j][0] - 8, bliste[0][j][1] - 8, bliste[0][j][0]+8,bliste[0][j][1]+8, fill=colors[j],tags=str(bliste[0][j][0])+","+str(bliste[0][j][1]),width="2")      
     index = 0
-    print("------")
     subliste = []
     for x in range(len(bliste)):
         if (0 != x and bliste[x] not in subliste):
             if(segmentation(bliste[0],bliste[x])):
                 subliste.append(x)
-    print(subliste)
     for el in subliste:
-        recur_tricolor(el,0)
-
-
-
+        recurTricolor(el,0)
 
 def getPoint(t1,t2):
     liste = []
     color = []
     colorb = []
     for el in t2:
-        color.append((el,getcolor(el)))
+        color.append((el,getColor(el)))
     for el in color:
         colorb.append(el)
     for i in range(3):
@@ -269,20 +273,15 @@ def getPoint(t1,t2):
             if t1[i] == t2[j]:
                 liste.remove(t1[i])
     return (liste,colorb[0])
-            
-    
+        
 
-def getcolor(pt):
+def getColor(pt):
     return (main.canvas.itemcget(main.canvas.find_withtag(str(pt[0])+","+str(pt[1])), "fill"))
 
-
-
-def recur_tricolor(index,indexb):
+def recurTricolor(index,indexb):
     global bliste
-    print("Tricoloration du triangle n°",index, "indice précédent : ",indexb)
     point = getPoint(bliste[index],bliste[indexb])[0][0]
     couleur = getPoint(bliste[index],bliste[indexb])[1][1]
-    print("DEF POINT",point,"/",couleur)
     main.canvas.create_oval(point[0]- 8,point[1] - 8,point[0]+8,point[1]+8, fill=couleur,tags=str(point[0])+","+str(point[1]),width="2")
     subliste = []
     for x in range(len(bliste)):
@@ -290,7 +289,7 @@ def recur_tricolor(index,indexb):
             if(segmentation(bliste[index],bliste[x])):
                 subliste.append(x)
     for el in subliste:
-        recur_tricolor(el,index)
+        recurTricolor(el,index)
 
 
 
