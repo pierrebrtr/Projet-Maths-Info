@@ -311,39 +311,118 @@ def coloration():
         print("Point n°" + str(j + 1) + " : ",main.canvas.itemcget(main.canvas.find_withtag(str(bliste[0][j][0])+","+str(bliste[0][j][1])), "fill"),str(bliste[0][j][0])+","+str(bliste[0][j][1]))
     index = 0
     print("------")
-    recur(0)
-
-
-subliste = []         
-def recur(index):
-    print("RECURSION AVEC " + str(index))
-    global bliste
-    c = 0
+    subliste = []
     for x in range(len(bliste)):
-        if (bliste[x] != "N" and bliste[index] != "N" and index != x):
-            if(segmentation(bliste[index],bliste[x])):
-                c= c +1
-                subliste.append((bliste[x],bliste[index]))
-    print("Nb d'occurences : " + str(c))
+        if (0 != x and bliste[x] not in subliste):
+            if(segmentation(bliste[0],bliste[x])):
+                subliste.append(x)
+    print(subliste)
+    for el in subliste:
+        recur_tricolor(el,0)
 
+
+
+
+def getPoint(t1,t2):
+    liste = []
+    color = []
+    colorb = []
+    for el in t2:
+        color.append((el,getcolor(el)))
+    for el in color:
+        colorb.append(el)
+    for i in range(3):
+        for j in range(3):
+            if(color[j][0] == t1[i]):
+                colorb.remove(color[j])
+    liste = []
+    for el in t1:
+        liste.append(el)
+        
+
+    for i in range(3):
+        for j in range(3):
+            if t1[i] == t2[j]:
+                liste.remove(t1[i])
+    return (liste,colorb[0])
+            
     
-    for x in range(len(bliste)):
-        if (bliste[x] != "N" and bliste[index] != "N" and index != x):
-            if(segmentation(bliste[index],bliste[x])):
-                print("Triangle n°" + str(x) + " collé à triangle n°" + str(index))
-                triangle = bliste[x]
-                colors = ["red","green","blue"]
-                ide = [0,1,2]
-                for i in range (len(triangle)):
-                    if (triangle[i] in bliste[index]):
-                        colors.remove(main.canvas.itemcget(main.canvas.find_withtag(str(triangle[i][0])+","+str(triangle[i][1])), "fill"))
-                        ide.remove(i)
-                y = ide[0]
-                main.canvas.create_oval( triangle[y][0]- 8, triangle[y][1] - 8, triangle[y][0]+8,triangle[y][1]+8, fill=colors[0],tags=str(triangle[y][0])+","+str(triangle[y][1]),width="2")
-                bliste[index] = "N"
-                print("NEXT ->", str(x))
-                recur(x)
 
+def getcolor(pt):
+    return (main.canvas.itemcget(main.canvas.find_withtag(str(pt[0])+","+str(pt[1])), "fill"))
+
+
+
+def recur_tricolor(index,indexb):
+    global bliste
+    print("Tricoloration du triangle n°",index, "indice précédent : ",indexb)
+    point = getPoint(bliste[index],bliste[indexb])[0][0]
+    couleur = getPoint(bliste[index],bliste[indexb])[1][1]
+    print("DEF POINT",point,"/",couleur)
+    main.canvas.create_oval(point[0]- 8,point[1] - 8,point[0]+8,point[1]+8, fill=couleur,tags=str(point[0])+","+str(point[1]),width="2")
+    subliste = []
+    for x in range(len(bliste)):
+        if (index != x and indexb != x and bliste[x] not in subliste):
+            if(segmentation(bliste[index],bliste[x])):
+                subliste.append(x)
+    for el in subliste:
+        recur_tricolor(el,index)
+
+
+         
+##def recur(index,mode,prec):
+##    subliste = [-1]
+##    print("---------")
+##    print("RECURSION AVEC " + str(index))
+##    global bliste
+##    c = 0
+##    for x in range(len(bliste)):
+##        if (bliste[x] != "N" and bliste[index] != "N" and index != x):
+##            if(segmentation(bliste[index],bliste[x])):
+##                c= c +1
+##                subliste.append(x)
+##    print("Nb d'occurences : " + str(c) + ",liste : " + str(subliste))
+##
+##    
+##    for x in range(len(bliste)):
+##        if (bliste[x] != "N" and bliste[index] != "N" and index != x):
+##            if(segmentation(bliste[index],bliste[x])):
+##                print("Triangle n°" + str(x) + " collé à triangle n°" + str(index))
+##                triangle = bliste[x]
+##                colors = ["red","green","blue"]
+##                ide = [0,1,2]
+##                if mode ==1:
+##                    print("")
+##                    for i in range (len(triangle)):
+##                        if (triangle[i] in bliste[prec]):
+##                            try:
+##                                colors.remove(main.canvas.itemcget(main.canvas.find_withtag(str(triangle[i][0])+","+str(triangle[i][1])), "fill"))
+##                                ide.remove(i)
+##                            except:
+##                                print("--------")
+##                                print("ERREUR")
+##                                print("--------")
+##                else :
+##                    for i in range (len(triangle)):
+##                        if (triangle[i] in bliste[index]):
+##                            try:
+##                                colors.remove(main.canvas.itemcget(main.canvas.find_withtag(str(triangle[i][0])+","+str(triangle[i][1])), "fill"))
+##                                ide.remove(i)
+##                            except:
+##                                print("--------")
+##                                print("ERREUR")
+##                                print("--------")
+##                y = ide[0]
+##                main.canvas.create_oval( triangle[y][0]- 8, triangle[y][1] - 8, triangle[y][0]+8,triangle[y][1]+8, fill=colors[0],tags=str(triangle[y][0])+","+str(triangle[y][1]),width="2")
+##                print("POINT : ", triangle[y],colors[0])
+##                if c < 2:
+##                    print("SET N TO ",index)
+##                    bliste[index] = "N"
+##                print("NEXT ->", str(x))
+##                recur(x,0,0)
+##    for i in range(1,len(subliste)):
+##        if subliste[i] != -1:
+##            recur(index,1,x)
 
 
 
