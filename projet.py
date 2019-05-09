@@ -1,6 +1,10 @@
 from tkinter import *
+import tkinter.filedialog
 from math import *
 import time
+
+
+
 
 print("""
       
@@ -14,6 +18,8 @@ print("""
 
 points = []
 global triliste
+global canpoly
+
 
 def demarrer(w = 500, h = 500):
     global width
@@ -39,14 +45,19 @@ class Application:
         self.fen = Tk()
         self.fen.title("Projet Maths Info | Paul & Pierre")
 
-##        self.menubar = Frame(self.fen)
-##        self.menubar.pack(side="top",fill=X)
-##        self.fbutton = Menubutton(self.menubar,text="Menu",underline = 0)
-##        self.fbutton.pack(side="left")
-##
-##        self.filemenu = Menu(self.fbutton)
-##        self.filemenu.add_command(label="Quit",command = self.fen.destroy)
-##        self.fbutton.config(menu=self.filemenu)
+        self.menubar = Frame(self.fen)
+        self.menubar.pack(side="top",fill=X)
+        self.fbutton = Menubutton(self.menubar,text="Fichier",underline = 0)
+        self.fbutton.pack(side="left")
+
+        self.fbutton2 = Menubutton(self.menubar,text="Personnaliser ",underline = 0)
+        self.fbutton2.pack(side="left")
+
+        self.filemenu = Menu(self.fbutton)
+        self.filemenu.add_command(label="Enregistrer le polygone",command = export)
+        self.filemenu.add_command(label="Ouvrir un polygone",command = openb)
+        self.filemenu.add_command(label="Quit",command = self.fen.destroy)
+        self.fbutton.config(menu=self.filemenu)
 
         self.canvas = Canvas(self.fen, bg="white", width=width, height= height)
         self.canvas.configure(cursor="crosshair")
@@ -58,7 +69,7 @@ class Application:
         self.textbox = Label(self.frame,text="Menu",font=("Helvetica", 16))
         self.textbox.grid(row=0,column=1)
         ##,ipady=100
-        
+
 
         self.bouton_trianguler = Button(self.frame, text="Trianguler", bg = "grey",command=trianguler)
         self.bouton_trianguler.grid(row=2,column =1,pady=10)
@@ -80,6 +91,8 @@ class Application:
         self.bouton_chiffre.config(state=DISABLED)
 
     def clear(self):
+        global canpoly
+        canpoly = False
         points.clear()
         main.canvas.delete("all")
         main.canvas.bind("<Motion>",move)
@@ -94,12 +107,16 @@ def point(event):
     if(len(points) >= 2):
         main.canvas.create_line(points, tags="line", width= 1)
         main.canvas.tag_lower("line")
-    main.canvas.create_oval(event.x - 8, event.y - 8, event.x+8, event.y+8, fill="red",tags= 'first' if len(points) == 1 else 'sec',width="2")
+    main.canvas.create_oval(event.x - 8, event.y - 8, event.x+8, event.y+8, fill="red",tags=[('first' if len(points) == 1 else 'sec'),"pt"],width="2",)
     main.canvas.create_line(event.x,event.y,event.x +1,event.y + 1,fill="blue", width= 1,tags="line2")
     main.canvas.tag_bind("first","<Button-1>",polygon)
+    
+    
     return points
 
 def polygon(event) :
+    global canpoly
+    canpoly = True
     main.canvas.create_line(points[0][0],points[0][1],points[-1][0],points[-1][1], tags="line", width= 1)
     main.canvas.create_polygon(*points, fill='red')
     main.canvas.tag_raise("line")
@@ -107,6 +124,9 @@ def polygon(event) :
     main.canvas.unbind("<Motion>")
     main.canvas.delete("line2")
     main.bouton_trianguler.config(state=NORMAL)
+
+   
+
 
    
 def move(event):
@@ -117,6 +137,55 @@ def move(event):
             main.canvas.tag_lower("line2")
             main.canvas.coords("line2", points[len(points)-1][0], points[len(points)-1][1], x1, y1)
         main.canvas.old_coords = x, y
+
+#-----Menu bis-----#
+
+def export():
+    global canpoly
+    if (canpoly) :
+        f = tkinter.filedialog.asksaveasfile(mode='w', defaultextension=".txt")
+        if f is None:
+            print("Annulation")
+            return
+        save = points
+        for el in points:
+            f.write(str(el[0])+ "," + str(el[1]) +"\n")
+        f.close() 
+    print("export")
+
+
+def openb():
+    global canpoly
+    canpoly = True
+    main.clear()
+    fname = tkinter.filedialog.askopenfilename(filetypes=(('text files', 'txt'),))
+    if (fname):
+        with open(fname,"r") as f:
+            liste = [ligne.strip() for ligne in f]
+            for z in range(len(liste)):
+                el = liste[z].split(",")
+                (x,y) = int(el[0]),int(el[1])
+                liste[z] = (x,y)
+            for i in range(len(liste)):
+                x = liste[i][0]
+                y = liste[i][1]
+                points.append((x,y))
+                if(len(points) >= 2):
+                    main.canvas.create_line(points, tags="line", width= 1)
+                    main.canvas.tag_lower("line")
+                main.canvas.create_oval(x - 8, y - 8, x+8, y+8, fill="red",tags=[('first' if len(points) == 1 else 'sec'),"pt"],width="2",)
+                main.canvas.create_line(x,y,x +1,y + 1,fill="blue", width= 1,tags="line2")
+                main.canvas.tag_bind("first","<Button-1>",polygon)
+                main.canvas.create_polygon(*points, fill='red')
+                main.canvas.tag_raise("line")
+                main.canvas.unbind("<Button 1>")
+                main.canvas.unbind("<Motion>")
+                main.canvas.delete("line2")
+                main.bouton_trianguler.config(state=NORMAL)
+                print("POINTS",points)
+                
+    
+
 
 
 #-----Triangulation-----#
@@ -241,10 +310,11 @@ global bliste
 def coloration():
     colors = ["red","green","blue"]
     global bliste,triliste
-    bliste = triliste
+    bliste = []
+    for el in triliste:
+        bliste.append(el)
     for j in range (0,3):
         main.canvas.create_oval(bliste[0][j][0] - 8, bliste[0][j][1] - 8, bliste[0][j][0]+8,bliste[0][j][1]+8, fill=colors[j],tags=str(bliste[0][j][0])+","+str(bliste[0][j][1]),width="2")      
-    index = 0
     subliste = []
     for x in range(len(bliste)):
         if (0 != x and bliste[x] not in subliste):
@@ -254,7 +324,6 @@ def coloration():
         recurTricolor(el,0)
 
 def getPoint(t1,t2):
-    liste = []
     color = []
     colorb = []
     for el in t2:
