@@ -1,31 +1,30 @@
 from tkinter import *
 import tkinter.filedialog
 from math import *
-import time
 from time import *
-
-
-
-
+import time
 print("""
       
- _____ ___ _  __  __  _  __ _  _ _    __ _____ _  __  __  _  
-|_   _| _ \ |/  \|  \| |/ _] || | |  /  \_   _| |/__\|  \| | 
-  | | | v / | /\ | | ' | [/\ \/ | |_| /\ || | | | \/ | | ' | 
-  |_| |_|_\_|_||_|_|\__|\__/\__/|___|_||_||_| |_|\__/|_|\__| 
 
+ ___  __  _  ___  _  _  _  _ 
+| __||  \| ||_ _|| |/ \| \| |
+| _| | o ) | | | | ( o ) \\ |
+|___||__/|_| |_| |_|\_/|_|\_|
+                             
 
 """)
 
 points = []
-global triliste
-global canpoly
+global triliste,canpoly,slowmode
+
+
 
 
 def demarrer(w = 500, h = 500):
     global width
     global height
     global main
+    
 
     width = w
     height = h
@@ -42,6 +41,8 @@ def demarrer(w = 500, h = 500):
 class Application:
 
     def __init__(self):
+        global slowmode
+        slowmode = False
 
         self.fen = Tk()
         self.fen.title("Editeur de polygone")
@@ -90,6 +91,9 @@ class Application:
         self.bouton_chiffre = Button(self.frame, text="Chiffres", bg = "green",command=chiffre)
         self.bouton_chiffre.grid(row=3,column =1,pady=10)
         self.bouton_chiffre.config(state=DISABLED)
+        self.var = IntVar()
+        self.bouton_slow = Checkbutton(self.frame, text="Slow mode", command=self.slow_mode, variable=self.var)
+        self.bouton_slow.grid(row=7,column =1,pady=10)
 
     def clear(self):
         global canpoly
@@ -102,6 +106,11 @@ class Application:
         main.bouton_coloration.config(state=DISABLED)
         main.bouton_chiffre.config(state=DISABLED)
     
+    def slow_mode(event):
+        global slowmode
+        slowmode = event.var.get()
+        print("Slowmode :",event.var.get())
+
 
 def point(event):
     points.append((event.x,event.y))
@@ -140,6 +149,7 @@ def move(event):
         main.canvas.old_coords = x, y
 
 #-----Menu bis-----#
+
 
 def export():
     global canpoly
@@ -277,6 +287,9 @@ def drawT(liste):
         main.canvas.create_line(triangle[0][0],triangle[0][1],triangle[1][0],triangle[1][1], tags="triangl", width= 1)
         main.canvas.create_line(triangle[0][0],triangle[0][1],triangle[2][0],triangle[2][1], tags="triangl", width= 1)
         main.canvas.create_line(triangle[1][0],triangle[1][1],triangle[2][0],triangle[2][1], tags="triangl", width= 1)
+        if slowmode:
+            main.fen.update()
+            time.sleep(1)
 
 def trianguler():
     global triliste
@@ -320,6 +333,9 @@ def coloration():
         bliste.append(el)
     for j in range (0,3):
         main.canvas.create_oval(bliste[0][j][0] - 8, bliste[0][j][1] - 8, bliste[0][j][0]+8,bliste[0][j][1]+8, fill=colors[j],tags=str(bliste[0][j][0])+","+str(bliste[0][j][1]),width="2")      
+        if slowmode:
+            main.fen.update()
+            time.sleep(1)
     subliste = []
     for x in range(len(bliste)):
         if (0 != x and bliste[x] not in subliste):
@@ -355,10 +371,14 @@ def getColor(pt):
     return (main.canvas.itemcget(main.canvas.find_withtag(str(pt[0])+","+str(pt[1])), "fill"))
 
 def recurTricolor(index,indexb):
+    global slowmode
     global bliste
     point = getPoint(bliste[index],bliste[indexb])[0][0]
     couleur = getPoint(bliste[index],bliste[indexb])[1][1]
     main.canvas.create_oval(point[0]- 8,point[1] - 8,point[0]+8,point[1]+8, fill=couleur,tags=str(point[0])+","+str(point[1]),width="2")
+    if slowmode:
+        main.fen.update()
+        time.sleep(1)
     subliste = []
     for x in range(len(bliste)):
         if (index != x and indexb != x and bliste[x] not in subliste):
