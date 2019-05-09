@@ -2,6 +2,7 @@ from tkinter import *
 import tkinter.filedialog
 from math import *
 import time
+from time import *
 
 
 
@@ -280,8 +281,11 @@ def drawT(liste):
 def trianguler():
     global triliste
     if len(points)>=4:
+        start = perf_counter()
         triliste = triangulerbis(points)
         drawT(triliste)
+        dt = perf_counter() - start
+        print("Performance triangulation:",round(dt * 10**3, 4), " ms pour ", len(points), "points")
         main.bouton_chiffre.config(state=NORMAL)
         main.bouton_coloration.config(state=NORMAL)
 
@@ -308,6 +312,7 @@ def segmentation(t1,t2):
 global bliste
 
 def coloration():
+    start = perf_counter()
     colors = ["red","green","blue"]
     global bliste,triliste
     bliste = []
@@ -322,6 +327,8 @@ def coloration():
                 subliste.append(x)
     for el in subliste:
         recurTricolor(el,0)
+    dt = perf_counter() - start
+    print("Performance tri-coloration :",round(dt * 10**3, 4), " ms pour ", len(points), "points")
 
 def getPoint(t1,t2):
     color = []

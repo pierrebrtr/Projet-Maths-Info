@@ -19,21 +19,16 @@ print("""
 """)
 
 
-def animate(angle):
-    try:
-        angle_degrees=angle
-        cangle = cmath.exp(angle_degrees*1j*math.pi/180)
-        offset = complex(center[0], center[1])
-        newxy = []
-        for x, y in triangle:
-            v = cangle * (complex(x, y) - offset) + offset
-            newxy.append(v.real)
-            newxy.append(v.imag)
-        canvas.coords(polygon_item, *newxy)
-    except ValueError:
-        print ("not integer")
-    
-
+def animate(angle,array):
+    angle_degrees=angle
+    cangle = cmath.exp(angle_degrees*1j*math.pi/180)
+    offset = complex(center[0], center[1])
+    newxy = []
+    for x, y in array:
+        v = cangle * (complex(x, y) - offset) + offset
+        newxy.append(v.real)
+        newxy.append(v.imag)
+    canvas.coords(polygon_item, *newxy)
 
 def editeur():
     fen.destroy()
@@ -68,7 +63,7 @@ while True:
     if i >=360:
         i = 0
     fen.update()
-    animate(i)
+    animate(i,triangle)
     time.sleep(0.04)
 
     
