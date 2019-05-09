@@ -43,7 +43,7 @@ class Application:
     def __init__(self):
 
         self.fen = Tk()
-        self.fen.title("Projet Maths Info | Paul & Pierre")
+        self.fen.title("Editeur de polygone")
 
         self.menubar = Frame(self.fen)
         self.menubar.pack(side="top",fill=X)
