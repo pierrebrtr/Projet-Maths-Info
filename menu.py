@@ -1,6 +1,10 @@
 from tkinter import *
+import tkinter as tk
 from math import *
 import time
+import math,cmath
+
+
 
 
 width = 700
@@ -13,6 +17,23 @@ print("""
 |_| |_||___||_|\_||___|
                        
 """)
+
+
+def animate(angle):
+    try:
+        angle_degrees=angle
+        cangle = cmath.exp(angle_degrees*1j*math.pi/180)
+        offset = complex(center[0], center[1])
+        newxy = []
+        for x, y in triangle:
+            v = cangle * (complex(x, y) - offset) + offset
+            newxy.append(v.real)
+            newxy.append(v.imag)
+        canvas.coords(polygon_item, *newxy)
+    except ValueError:
+        print ("not integer")
+    
+
 
 def editeur():
     fen.destroy()
@@ -36,7 +57,27 @@ bt_jeux_w = canvas.create_window(350, 320, window=bt_jeux)
 bt_quitter = Button(fen, text="Quitter",font=("Helvetica", 14),bg="red", command=fen.destroy)
 bt_quitter_w = canvas.create_window(640, 460, window=bt_quitter)
 
+triangle = [(50, 50), (150, 50), (150, 150)]
+
+polygon_item = canvas.create_polygon(triangle)
+center = 100, 100
+i = 0
+while True:
+    
+    i = i + 1
+    if i >=360:
+        i = 0
+    fen.update()
+    animate(i)
+    time.sleep(0.04)
+
+    
 fen.mainloop()
+
+
+
+
+
 
 
 
