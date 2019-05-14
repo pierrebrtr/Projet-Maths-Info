@@ -18,7 +18,7 @@ print("""
 def animate(angle,array):
     angle_degrees=angle
     cangle = cmath.exp(angle_degrees*1j*math.pi/180)
-    offset = complex(center[0], center[1])
+    offset = complex(center[0], center[1] -20)
     newxy = []
     for x, y in array:
         v = cangle * (complex(x, y) - offset) + offset

@@ -194,17 +194,19 @@ def getperso():
             f.close()
 def perso(index):
     global sommet1,sommet2,sommet3
-    if (index == 1):
-        sommet1 = tkinter.colorchooser.askcolor()[1]
-    elif (index ==2):
-        sommet2 = tkinter.colorchooser.askcolor()[1]
-    elif (index == 3):
-        sommet3 = tkinter.colorchooser.askcolor()[1]
-    with open("fav.txt","w") as f:
-        f.write("Perso\n")
-        f.write(sommet1+"\n")
-        f.write(sommet2+"\n")
-        f.write(sommet3+"\n")
+    color = tkinter.colorchooser.askcolor()[1]
+    if color:
+        if (index == 1):
+            sommet1 = color
+        elif (index ==2):
+            sommet2 = color
+        elif (index == 3):
+            sommet3 = color
+        with open("fav.txt","w") as f:
+            f.write("Perso\n")
+            f.write(sommet1+"\n")
+            f.write(sommet2+"\n")
+            f.write(sommet3+"\n")
             
             
 
