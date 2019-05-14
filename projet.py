@@ -3,7 +3,6 @@
 #Auteurs : Paul Lefay et Pierre Bertier                                                                                    
 ###################################################################
 
-
 from tkinter import *
 import tkinter.filedialog
 import tkinter.colorchooser
@@ -24,20 +23,14 @@ print("""
 points = []
 global triliste,canpoly,slowmode,sommet1,sommet2,sommet3
 
-
-
-
 #-----Initialisation-----#
 
 def demarrer(w = 500, h = 500):
     global width
     global height
     global main
-    
-
     width = w
     height = h
-
     main = Application()
     main.canvas.bind("<Button-1>", point)
     main.canvas.bind("<Button-3>", Application.clear)
@@ -62,6 +55,7 @@ class Application:
 
         self.menubar = Frame(self.fen)
         self.menubar.pack(side="top",fill=X)
+        
         self.fbutton = Menubutton(self.menubar,text="Fichier",underline = 0)
         self.fbutton.pack(side="left")
 
@@ -79,10 +73,7 @@ class Application:
         self.filemenu2.add_command(label="Couleur sommet tricoloration #2",command= lambda: perso(2))
         self.filemenu2.add_command(label="Couleur sommet tricoloration #3",command= lambda: perso(3))
         self.fbutton2.config(menu=self.filemenu2)
-
-
         
-
         self.canvas = Canvas(self.fen, bg="white", width=width, height= height)
         self.canvas.configure(cursor="crosshair")
         self.canvas.pack(side="left")
@@ -140,8 +131,6 @@ def point(event):
     main.canvas.create_oval(event.x - 8, event.y - 8, event.x+8, event.y+8, fill="red",tags=[('first' if len(points) == 1 else 'sec'),"pt"],width="2",)
     main.canvas.create_line(event.x,event.y,event.x +1,event.y + 1,fill="blue", width= 1,tags="line2")
     main.canvas.tag_bind("first","<Button-1>",polygon)
-    
-    
     return points
 
 def polygon(event) :
@@ -156,9 +145,6 @@ def polygon(event) :
     main.bouton_trianguler.config(state=NORMAL)
 
     print(points)
-   
-
-
    
 def move(event):
     x, y = event.x, event.y
@@ -179,10 +165,9 @@ def getperso():
             sommet1 = lines[1].strip().replace(" ", "")
             sommet2 = lines[2].strip().replace(" ", "")
             sommet3 = lines[3].strip().replace(" ", "")
-        print("Couleurs : ",sommet1,sommet2,sommet3)
     except :
         #si le fichier n'existe pas :
-        print("error")
+        print("Problème sur le fichier, résolution en cours")
         sommet1 = "red"
         sommet2 = "green"
         sommet3 = "blue"
@@ -192,6 +177,7 @@ def getperso():
             f.write("green\n")
             f.write("blue\n")
             f.close()
+
 def perso(index):
     global sommet1,sommet2,sommet3
     color = tkinter.colorchooser.askcolor()[1]
@@ -208,8 +194,6 @@ def perso(index):
             f.write(sommet2+"\n")
             f.write(sommet3+"\n")
             
-            
-
 
 def export():
     global canpoly
@@ -255,8 +239,6 @@ def openb():
                 main.bouton_trianguler.config(state=NORMAL)
                 print("POINTS",points)
                 
-    
-
 
 
 #-----Triangulation-----#
@@ -427,7 +409,6 @@ def getPoint(t1,t2):
                 liste.remove(t1[i])
     return (liste,colorb[0])
         
-
 def getColor(pt):
     return (main.canvas.itemcget(main.canvas.find_withtag(str(pt[0])+","+str(pt[1])), "fill"))
 

@@ -41,6 +41,43 @@ def click(event):
     if (x > 565 and x < 670 and y > 450 and y < 480):
         fen.destroy()
 
+def anchor(event):
+    x= event.x
+    y = event.y
+    if (x > 265 and x < 440 and y > 340 and y < 390):
+        x1 = 260
+        x2 = 437
+        y1=337
+        y2=385
+        canvas.create_line(x1,y1,x2,y1,fill="red",width = 3,tags="rect")
+        canvas.create_line(x1,y1,x1,y2,fill="red",width = 3,tags="rect")
+        canvas.create_line(x2,y1,x2,y2,fill="red",width = 3,tags="rect")
+        canvas.create_line(x1,y2,x2,y2,fill="red",width = 3,tags="rect")
+    elif (x > 265 and x < 440 and y > 260 and y < 310):
+        x1 = 260
+        x2 = 437
+        y1=260,
+        y2=310
+        canvas.create_line(x1,y1,x2,y1,fill="red",width = 3,tags="rect")
+        canvas.create_line(x1,y1,x1,y2,fill="red",width = 3,tags="rect")
+        canvas.create_line(x2,y1,x2,y2,fill="red",width = 3,tags="rect")
+        canvas.create_line(x1,y2,x2,y2,fill="red",width = 3,tags="rect")
+    elif(x > 565 and x < 670 and y > 450 and y < 480):
+        x1 = 565
+        x2 = 670
+        y1=447
+        y2=485
+        canvas.create_line(x1,y1,x2,y1,fill="yellow",width = 3,tags="rect")
+        canvas.create_line(x1,y1,x1,y2,fill="yellow",width = 3,tags="rect")
+        canvas.create_line(x2,y1,x2,y2,fill="yellow",width = 3,tags="rect")
+        canvas.create_line(x1,y2,x2,y2,fill="yellow",width = 3,tags="rect")
+    else:
+        canvas.delete("rect")
+        
+
+
+        
+
 fen = Tk()
 fen.title("Projet Maths Info | Paul & Pierre")
 
@@ -50,6 +87,7 @@ canvas.create_image(0,0,anchor=NW, image=logo)
 canvas.pack()
 
 canvas.bind("<Button-1>", click)
+canvas.bind("<Motion>",anchor)
 
 
 

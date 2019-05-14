@@ -1,4 +1,4 @@
 Perso
-red
+#ff0000
 green
 blue
