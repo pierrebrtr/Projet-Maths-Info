@@ -1,8 +1,3 @@
-###################################################################
-#Script	: Menu principal du projet                                                                                                                                                                                                                                                            
-#Auteurs : Paul Lefay et Pierre Bertier                                                                                    
-###################################################################
-
 from tkinter import *
 import tkinter as tk
 from math import *
@@ -58,10 +53,10 @@ canvas.bind("<Button-1>", click)
 
 
 
-triangle = [(50, 50), (150, 50), (150, 150)]
+triangle = [(365, 167), (337, 233), (392, 235)]
 
 polygon_item = canvas.create_polygon(triangle,fill="red")
-center = 100, 100
+center = 350, 350
 i = 0
 while True: 
     try :
@@ -76,3 +71,4 @@ while True:
 
     
 fen.mainloop()
+

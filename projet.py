@@ -6,6 +6,7 @@
 
 from tkinter import *
 import tkinter.filedialog
+import tkinter.colorchooser
 from math import *
 from time import *
 import time
@@ -21,7 +22,7 @@ print("""
 """)
 
 points = []
-global triliste,canpoly,slowmode
+global triliste,canpoly,slowmode,sommet1,sommet2,sommet3
 
 
 
@@ -51,6 +52,7 @@ def demarrer(w = 500, h = 500):
 class Application:
 
     def __init__(self):
+        getperso()
         global slowmode,canpoly
         canpoly = False
         slowmode = False
@@ -71,6 +73,15 @@ class Application:
         self.filemenu.add_command(label="Ouvrir un polygone",command = openb)
         self.filemenu.add_command(label="Quit",command = self.fen.destroy)
         self.fbutton.config(menu=self.filemenu)
+
+        self.filemenu2 = Menu(self.fbutton2)
+        self.filemenu2.add_command(label="Couleur sommet tricoloration #1",command= lambda: perso(1))
+        self.filemenu2.add_command(label="Couleur sommet tricoloration #2",command= lambda: perso(2))
+        self.filemenu2.add_command(label="Couleur sommet tricoloration #3",command= lambda: perso(3))
+        self.fbutton2.config(menu=self.filemenu2)
+
+
+        
 
         self.canvas = Canvas(self.fen, bg="white", width=width, height= height)
         self.canvas.configure(cursor="crosshair")
@@ -159,6 +170,43 @@ def move(event):
         main.canvas.old_coords = x, y
 
 #-----Menu bis-----#
+
+def getperso():
+    global sommet1,sommet2,sommet3
+    try:
+        with open("fav.txt","r") as f:
+            lines=f.readlines()
+            sommet1 = lines[1].strip().replace(" ", "")
+            sommet2 = lines[2].strip().replace(" ", "")
+            sommet3 = lines[3].strip().replace(" ", "")
+        print("Couleurs : ",sommet1,sommet2,sommet3)
+    except :
+        #si le fichier n'existe pas :
+        print("error")
+        sommet1 = "red"
+        sommet2 = "green"
+        sommet3 = "blue"
+        with open("fav.txt","w") as f:
+            f.write("Perso\n")
+            f.write("red\n")
+            f.write("green\n")
+            f.write("blue\n")
+            f.close()
+def perso(index):
+    global sommet1,sommet2,sommet3
+    if (index == 1):
+        sommet1 = tkinter.colorchooser.askcolor()[1]
+    elif (index ==2):
+        sommet2 = tkinter.colorchooser.askcolor()[1]
+    elif (index == 3):
+        sommet3 = tkinter.colorchooser.askcolor()[1]
+    with open("fav.txt","w") as f:
+        f.write("Perso\n")
+        f.write(sommet1+"\n")
+        f.write(sommet2+"\n")
+        f.write(sommet3+"\n")
+            
+            
 
 
 def export():
@@ -335,8 +383,9 @@ def segmentation(t1,t2):
 global bliste
 
 def coloration():
+    global sommet1,sommet2,sommet3
     start = perf_counter()
-    colors = ["red","green","blue"]
+    colors = [sommet1,sommet2,sommet3]
     global bliste,triliste
     bliste = []
     for el in triliste:
