@@ -1,11 +1,13 @@
+###################################################################
+#Script	: Menu principal du projet                                                                                                                                                                                                                                                            
+#Auteurs : Paul Lefay et Pierre Bertier                                                                                    
+###################################################################
+
 from tkinter import *
 import tkinter as tk
 from math import *
 import time
 import math,cmath
-
-
-
 
 width = 700
 height = 500
@@ -14,8 +16,7 @@ print("""
  _   _  ___  _  _  _ _ 
 | \_/ || __|| \| || | |
 | \_/ || _| | \\ || U |
-|_| |_||___||_|\_||___|
-                       
+|_| |_||___||_|\_||___|                      
 """)
 
 
@@ -34,45 +35,44 @@ def editeur():
     fen.destroy()
     import projet as projetb
 
+
+def click(event):
+    x= event.x
+    y = event.y
+    if (x > 265 and x < 440 and y > 260 and y < 310):
+        editeur()
+    if (x > 265 and x < 440 and y > 340 and y < 390):
+        print("jeux")
+    if (x > 565 and x < 670 and y > 450 and y < 480):
+        fen.destroy()
+
 fen = Tk()
 fen.title("Projet Maths Info | Paul & Pierre")
 
 canvas = Canvas(fen, bg="white", width=width, height= height)
+logo=PhotoImage(file="menu.png")
+canvas.create_image(0,0,anchor=NW, image=logo)
 canvas.pack()
 
-canvas.create_text(350,70,fill="darkred",font=("Helvetica", 50),
-                        text="MENU")
-bt_editeur = Button(fen, text="Editeur",font=("Helvetica", 14), command=editeur)
-bt_editeur_w = canvas.create_window(350, 250, window=bt_editeur)
-
-bt_jeux = Button(fen, text="Jeux #1",font=("Helvetica", 14), command=lambda: print("COMMANDE"))
-bt_jeux_w = canvas.create_window(350, 320, window=bt_jeux)
+canvas.bind("<Button-1>", click)
 
 
-bt_quitter = Button(fen, text="Quitter",font=("Helvetica", 14),bg="red", command=fen.destroy)
-bt_quitter_w = canvas.create_window(640, 460, window=bt_quitter)
 
 triangle = [(50, 50), (150, 50), (150, 150)]
 
-polygon_item = canvas.create_polygon(triangle)
+polygon_item = canvas.create_polygon(triangle,fill="red")
 center = 100, 100
 i = 0
-while True:
-    
-    i = i + 1
-    if i >=360:
-        i = 0
-    fen.update()
-    animate(i,triangle)
-    time.sleep(0.04)
+while True: 
+    try :
+        i = i + 1
+        if i >=360:
+            i = 0
+        fen.update()
+        animate(i,triangle)
+        time.sleep(0.04)
+    except:
+        False
 
     
 fen.mainloop()
-
-
-
-
-
-
-
-

@@ -1,3 +1,9 @@
+###################################################################
+#Script	: Editeur de polygones + triangulation + tricoloration                                                                                                                                                                                                                                                              
+#Auteurs : Paul Lefay et Pierre Bertier                                                                                    
+###################################################################
+
+
 from tkinter import *
 import tkinter.filedialog
 from math import *
@@ -20,6 +26,8 @@ global triliste,canpoly,slowmode
 
 
 
+#-----Initialisation-----#
+
 def demarrer(w = 500, h = 500):
     global width
     global height
@@ -38,10 +46,13 @@ def demarrer(w = 500, h = 500):
 
     return
 
+#-----Classe principale-----#
+
 class Application:
 
     def __init__(self):
-        global slowmode
+        global slowmode,canpoly
+        canpoly = False
         slowmode = False
 
         self.fen = Tk()
@@ -70,8 +81,6 @@ class Application:
 
         self.textbox = Label(self.frame,text="Menu",font=("Helvetica", 16))
         self.textbox.grid(row=0,column=1)
-        ##,ipady=100
-
 
         self.bouton_trianguler = Button(self.frame, text="Trianguler", bg = "grey",command=trianguler)
         self.bouton_trianguler.grid(row=2,column =1,pady=10)
@@ -135,6 +144,7 @@ def polygon(event) :
     main.canvas.delete("line2")
     main.bouton_trianguler.config(state=NORMAL)
 
+    print(points)
    
 
 
@@ -298,7 +308,7 @@ def trianguler():
         triliste = triangulerbis(points)
         drawT(triliste)
         dt = perf_counter() - start
-        print("Performance triangulation:",round(dt * 10**3, 4), " ms pour ", len(points), "points")
+        print("Performance triangulation:",round(dt * 10**3, 2), " ms pour ", len(points), "points")
         main.bouton_chiffre.config(state=NORMAL)
         main.bouton_coloration.config(state=NORMAL)
 
@@ -344,7 +354,7 @@ def coloration():
     for el in subliste:
         recurTricolor(el,0)
     dt = perf_counter() - start
-    print("Performance tri-coloration :",round(dt * 10**3, 4), " ms pour ", len(points), "points")
+    print("Performance tri-coloration :",round(dt * 10**3, 2), " ms pour ", len(points), "points")
 
 def getPoint(t1,t2):
     color = []
@@ -387,6 +397,8 @@ def recurTricolor(index,indexb):
     for el in subliste:
         recurTricolor(el,index)
 
+
+#-----Initialisation-----#
 
 
 demarrer()
