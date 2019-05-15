@@ -136,9 +136,8 @@ def point(event):
 def polygon(event) :
     global canpoly
     canpoly = True
-    main.canvas.create_line(points[0][0],points[0][1],points[-1][0],points[-1][1], tags="line", width= 1)
-    main.canvas.create_polygon(*points, fill='red')
-    main.canvas.tag_raise("line")
+    main.canvas.create_polygon(*points, fill='red',width=1,outline="black")
+    main.canvas.delete("line")
     main.canvas.unbind("<Button 1>")
     main.canvas.unbind("<Motion>")
     main.canvas.delete("line2")
@@ -225,13 +224,10 @@ def openb():
                 x = liste[i][0]
                 y = liste[i][1]
                 points.append((x,y))
-                if(len(points) >= 2):
-                    main.canvas.create_line(points, tags="line", width= 1)
-                    main.canvas.tag_lower("line")
                 main.canvas.create_oval(x - 8, y - 8, x+8, y+8, fill="red",tags=[('first' if len(points) == 1 else 'sec'),"pt"],width="2",)
                 main.canvas.create_line(x,y,x +1,y + 1,fill="blue", width= 1,tags="line2")
                 main.canvas.tag_bind("first","<Button-1>",polygon)
-                main.canvas.create_polygon(*points, fill='red')
+                main.canvas.create_polygon(*points, fill='red',width=1,outline="black")
                 main.canvas.tag_raise("line")
                 main.canvas.unbind("<Button 1>")
                 main.canvas.unbind("<Motion>")

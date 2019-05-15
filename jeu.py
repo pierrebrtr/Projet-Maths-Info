@@ -9,11 +9,12 @@ import tkinter.filedialog
 from math import *
 from time import *
 import time
+import random
 
 
 
 points = []
-global triliste,canpoly,sommet1,sommet2,sommet3
+global triliste,canpoly,sommet1,sommet2,sommet3,width,height
 
 
 print("""
@@ -106,8 +107,11 @@ def polygon(event) :
    
 
 def leave():
-    main.fen.destroy()
-    main.fen2.destroy()
+    try:
+        main.fen.destroy()
+        main.fen2.destroy()
+    except:
+        print("")
     import menu as menub
     exit()
 
@@ -137,8 +141,17 @@ def getperso():
 #-----Modes de jeu-----#
 
 def randomg():
+    global width,height
     print("Random g")
     main.fen2.destroy()
+    for i in range(0,5):
+        points.append((random.randint(1,width -1),random.randint(1,height - 1)))
+   
+    for i in range(len(points)):
+        x = points[i][0]
+        y = points[i][1]
+        main.canvas.create_oval(x - 8, y - 8, x+8, y+8, fill="red",tags=[('first' if len(points) == 1 else 'sec'),"pt"],width="2",)
+        main.canvas.create_polygon(*points, fill='red',width=1,outline="black")
 
 def importg():
     main.clear()
@@ -154,17 +167,9 @@ def importg():
                 x = liste[i][0]
                 y = liste[i][1]
                 points.append((x,y))
-                if(len(points) >= 2):
-                    main.canvas.create_line(points, tags="line", width= 1)
-                    main.canvas.tag_lower("line")
                 main.canvas.create_oval(x - 8, y - 8, x+8, y+8, fill="red",tags=[('first' if len(points) == 1 else 'sec'),"pt"],width="2",)
-                main.canvas.create_line(x,y,x +1,y + 1,fill="blue", width= 1,tags="line2")
-                main.canvas.tag_bind("first","<Button-1>",polygon)
-                main.canvas.create_polygon(*points, fill='red')
-                main.canvas.tag_raise("line")
-                main.canvas.unbind("<Button 1>")
-                main.canvas.unbind("<Motion>")
-                main.canvas.delete("line2")
+                main.canvas.create_polygon(*points, fill='red',width=1,outline="black")
+
             print("POINTS",points)
         main.fen2.destroy()
         main.bouton_valider.config(state=NORMAL) 
