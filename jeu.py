@@ -1,7 +1,7 @@
 ###################################################################
 #Script	: Jeu #1
 #Bonus : jeu en multijoueur
-#Auteurs : Paul Lefay et Pierre Bertier                                                                                    
+#Auteurs : Paul Lefay et Pierre Bertier
 ###################################################################
 
 from tkinter import *
@@ -14,15 +14,16 @@ import random
 
 
 points = []
+global verif
 global triliste,canpoly,sommet1,sommet2,sommet3,width,height
 
 
 print("""
-   _  ___  _ _ 
+   _  ___  _ _
   | || __|| | |
 n_| || _| | U |
 \__/ |___||___|
-               
+
 """)
 
 
@@ -56,7 +57,7 @@ class Application:
 
         self.bouton_import = Button(self.fen2, text="Importer", bg = "brown2",command=importg)
         self.bouton_import.pack()
-        
+
         self.fen = Tk()
         self.fen.title("Jouer")
 
@@ -72,18 +73,18 @@ class Application:
         self.textbox = Label(self.frame,text="Menu",font=("Helvetica", 16))
         self.textbox.grid(row=0,column=1)
 
-        self.bouton_valider = Button(self.frame, text="Valider", bg = "green")
+        self.bouton_valider = Button(self.frame, text="Valider", bg = "green",command=validate)
         self.bouton_valider.grid(row=2,column =1,pady=10)
         self.bouton_valider.config(state=DISABLED)
 
         self.bouton_quitter = Button(self.frame, text="Menu principal", bg = "red",command=leave)
         self.bouton_quitter.grid(row=3,column =1,pady=10)
-        
+
     def clear(self):
         points.clear()
         main.canvas.delete("all")
 
-    
+
 
 def point(event):
     points.append((event.x,event.y))
@@ -104,7 +105,7 @@ def polygon(event) :
     main.canvas.unbind("<Button 1>")
     main.canvas.delete("line2")
     print(points)
-   
+
 
 def leave():
     try:
@@ -146,7 +147,7 @@ def randomg():
     main.fen2.destroy()
     for i in range(0,5):
         points.append((random.randint(1,width -1),random.randint(1,height - 1)))
-   
+
     for i in range(len(points)):
         x = points[i][0]
         y = points[i][1]
@@ -172,8 +173,61 @@ def importg():
 
             print("POINTS",points)
         main.fen2.destroy()
-        main.bouton_valider.config(state=NORMAL) 
-    
+        main.bouton_valider.config(state=NORMAL)
+        startg()
+
+#-----Début de partie-----#
+
+def startg():
+    trianguler()
+    global sommet1,sommet2,sommet3
+    colors = [sommet1,sommet2,sommet3]
+    global bliste,triliste
+    bliste = []
+    for el in triliste:
+        bliste.append(el)
+    for j in range (0,3):
+
+        main.canvas.create_oval(bliste[0][j][0] - 8, bliste[0][j][1] - 8, bliste[0][j][0]+8,bliste[0][j][1]+8, fill=colors[j],tags=str(bliste[0][j][0])+","+str(bliste[0][j][1]),width="2")
+        print("colorin",getColor(bliste[0][j]))
+    for x in range(2,len(bliste)):
+        for j in range (0,3):
+            if not getColor(bliste[x][j]):
+                main.canvas.create_oval(bliste[x][j][0] - 8, bliste[x][j][1] - 8, bliste[x][j][0]+8,bliste[x][j][1]+8, fill="yellow",tags=str(bliste[x][j][0])+","+str(bliste[x][j][1]),width="2")
+                main.canvas.tag_bind((str(bliste[x][j][0])+","+str(bliste[x][j][1])), "<Button-1>", clickb)
+
+
+
+def clickb(event):
+    global sommet1,sommet2,sommet3
+    x = event.x
+    y = event.y
+    el = main.canvas.find_closest(x,y)
+    color = main.canvas.itemcget(el, "fill")
+    if(color == "yellow"):
+        color = sommet1
+    elif(color == sommet1):
+        color = sommet2
+    elif (color == sommet2):
+        color = sommet3
+    elif (color == sommet3):
+        color = sommet1
+    main.canvas.itemconfig(el, fill=color)
+
+
+def validate():
+    print("Validation ...")
+    init = []
+    global bliste,verif
+    for el in bliste:
+        for j in range(0,3):
+            if ((el[j][0],el[j][1]),getColor(el[j])) not in init :
+                init.append(((el[j][0],el[j][1]),getColor(el[j])))
+    print("INIT", init)
+    coloration()
+    if verif == init:
+        print("WINNNNNN")
+
 
 #-----Triangulation-----#
 
@@ -188,7 +242,7 @@ def gauche(points):
     return j
 
 def cotedroite(p0,p1,M):
-    return (p1[0]-p0[0])*(M[1]-p0[1])-(p1[1]-p0[1])*(M[0]-p0[0])  
+    return (p1[0]-p0[0])*(M[1]-p0[1])-(p1[1]-p0[1])*(M[0]-p0[0])
 
 def voisin_sommet(n,i,di):
     return (i+di)%n
@@ -263,9 +317,6 @@ def drawT(liste):
         main.canvas.create_line(triangle[0][0],triangle[0][1],triangle[1][0],triangle[1][1], tags="triangl", width= 1)
         main.canvas.create_line(triangle[0][0],triangle[0][1],triangle[2][0],triangle[2][1], tags="triangl", width= 1)
         main.canvas.create_line(triangle[1][0],triangle[1][1],triangle[2][0],triangle[2][1], tags="triangl", width= 1)
-        if slowmode:
-            main.fen.update()
-            time.sleep(1)
 
 def trianguler():
     global triliste
@@ -275,8 +326,6 @@ def trianguler():
         drawT(triliste)
         dt = perf_counter() - start
         print("Performance triangulation:",round(dt * 10**3, 2), " ms pour ", len(points), "points")
-        main.bouton_chiffre.config(state=NORMAL)
-        main.bouton_coloration.config(state=NORMAL)
 
 
 def chiffre():
@@ -294,25 +343,22 @@ def segmentation(t1,t2):
     success = False
     if((t1[0] in t2 and t1[1] in t2)  or (t1[2] in t2 and t1[1] in t2) or (t1[0] in t2 and t1[2] in t2)):
         success = True
-        
+
     return (success)
 
 
 global bliste
 
 def coloration():
-    global sommet1,sommet2,sommet3
-    start = perf_counter()
+    global sommet1,sommet2,sommet3,verif
+    verif = []
     colors = [sommet1,sommet2,sommet3]
     global bliste,triliste
     bliste = []
     for el in triliste:
         bliste.append(el)
     for j in range (0,3):
-        main.canvas.create_oval(bliste[0][j][0] - 8, bliste[0][j][1] - 8, bliste[0][j][0]+8,bliste[0][j][1]+8, fill=colors[j],tags=str(bliste[0][j][0])+","+str(bliste[0][j][1]),width="2")      
-        if slowmode:
-            main.fen.update()
-            time.sleep(1)
+        verif.append(((bliste[0][j][0],bliste[0][j][1]),colors[j]))
     subliste = []
     for x in range(len(bliste)):
         if (0 != x and bliste[x] not in subliste):
@@ -320,8 +366,7 @@ def coloration():
                 subliste.append(x)
     for el in subliste:
         recurTricolor(el,0)
-    dt = perf_counter() - start
-    print("Performance tri-coloration :",round(dt * 10**3, 2), " ms pour ", len(points), "points")
+    print("LISTE VERIF", verif)
 
 def getPoint(t1,t2):
     color = []
@@ -342,19 +387,16 @@ def getPoint(t1,t2):
             if t1[i] == t2[j]:
                 liste.remove(t1[i])
     return (liste,colorb[0])
-        
+
 def getColor(pt):
     return (main.canvas.itemcget(main.canvas.find_withtag(str(pt[0])+","+str(pt[1])), "fill"))
 
 def recurTricolor(index,indexb):
-    global slowmode
+    global verif
     global bliste
     point = getPoint(bliste[index],bliste[indexb])[0][0]
     couleur = getPoint(bliste[index],bliste[indexb])[1][1]
-    main.canvas.create_oval(point[0]- 8,point[1] - 8,point[0]+8,point[1]+8, fill=couleur,tags=str(point[0])+","+str(point[1]),width="2")
-    if slowmode:
-        main.fen.update()
-        time.sleep(1)
+    verif.append(((point[0],point[1]),couleur))
     subliste = []
     for x in range(len(bliste)):
         if (index != x and indexb != x and bliste[x] not in subliste):

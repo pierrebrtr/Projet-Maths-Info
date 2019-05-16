@@ -8,10 +8,10 @@ width = 700
 height = 500
 print("""
 
- _   _  ___  _  _  _ _ 
+ _   _  ___  _  _  _ _
 | \_/ || __|| \| || | |
 | \_/ || _| | \\ || U |
-|_| |_||___||_|\_||___|                      
+|_| |_||___||_|\_||___|
 """)
 
 
@@ -73,10 +73,10 @@ def anchor(event):
         canvas.create_line(x1,y2,x2,y2,fill="yellow",width = 3,tags="rect")
     else:
         canvas.delete("rect")
-        
 
 
-        
+
+
 
 fen = Tk()
 fen.title("Projet Maths Info | Paul & Pierre")
@@ -96,7 +96,7 @@ triangle = [(365, 167), (337, 233), (392, 235)]
 polygon_item = canvas.create_polygon(triangle,fill="red")
 center = 350, 350
 i = 0
-while True: 
+while True:
     try :
         i = i + 1
         if i >=360:
@@ -107,6 +107,5 @@ while True:
     except:
         False
 
-    
-fen.mainloop()
 
+fen.mainloop()
