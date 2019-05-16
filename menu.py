@@ -3,6 +3,7 @@ import tkinter as tk
 from math import *
 import time
 import math,cmath
+import os
 
 width = 700
 height = 500
@@ -28,7 +29,14 @@ def animate(angle,array):
 
 def editeur():
     fen.destroy()
-    import projet as projetb
+    os.system('python projet.py')
+    exit()
+
+def jeu():
+    fen.destroy()
+    os.system('python jeu.py')
+    main.fen.destroy()
+    exit()
 
 
 def click(event):
@@ -37,7 +45,7 @@ def click(event):
     if (x > 265 and x < 440 and y > 260 and y < 310):
         editeur()
     if (x > 265 and x < 440 and y > 340 and y < 390):
-        print("jeux")
+        jeu()
     if (x > 565 and x < 670 and y > 450 and y < 480):
         fen.destroy()
 

@@ -1,6 +1,6 @@
 ###################################################################
-#Script	: Editeur de polygones + triangulation + tricoloration                                                                                                                                                                                                                                                              
-#Auteurs : Paul Lefay et Pierre Bertier                                                                                    
+#Script	: Editeur de polygones + triangulation + tricoloration
+#Auteurs : Paul Lefay et Pierre Bertier
 ###################################################################
 
 from tkinter import *
@@ -9,14 +9,15 @@ import tkinter.colorchooser
 from math import *
 from time import *
 import time
+import os
 print("""
-      
 
- ___  __  _  ___  _  _  _  _ 
+
+ ___  __  _  ___  _  _  _  _
 | __||  \| ||_ _|| |/ \| \| |
 | _| | o ) | | | | ( o ) \\ |
 |___||__/|_| |_| |_|\_/|_|\_|
-                             
+
 
 """)
 
@@ -55,7 +56,7 @@ class Application:
 
         self.menubar = Frame(self.fen)
         self.menubar.pack(side="top",fill=X)
-        
+
         self.fbutton = Menubutton(self.menubar,text="Fichier",underline = 0)
         self.fbutton.pack(side="left")
 
@@ -73,11 +74,11 @@ class Application:
         self.filemenu2.add_command(label="Couleur sommet tricoloration #2",command= lambda: perso(2))
         self.filemenu2.add_command(label="Couleur sommet tricoloration #3",command= lambda: perso(3))
         self.fbutton2.config(menu=self.filemenu2)
-        
+
         self.canvas = Canvas(self.fen, bg="white", width=width, height= height)
         self.canvas.configure(cursor="crosshair")
         self.canvas.pack(side="left")
-        
+
         self.frame = Frame(self.fen)
         self.frame.pack(side="right")
 
@@ -96,7 +97,7 @@ class Application:
         self.bouton_clear.grid(row=5,column =1,pady=10)
 
 
-        self.bouton_quitter = Button(self.frame, text="Quitter", bg = "red",command=self.fen.destroy)
+        self.bouton_quitter = Button(self.frame, text="Quitter", bg = "red",command=leave)
         self.bouton_quitter.grid(row=6,column =1,pady=10)
 
         self.bouton_chiffre = Button(self.frame, text="Chiffres", bg = "green",command=chiffre)
@@ -116,12 +117,17 @@ class Application:
         main.bouton_trianguler.config(state=DISABLED)
         main.bouton_coloration.config(state=DISABLED)
         main.bouton_chiffre.config(state=DISABLED)
-    
+
     def slow_mode(event):
         global slowmode
         slowmode = event.var.get()
         print("Slowmode :",event.var.get())
 
+
+def leave():
+    os.system('python menu.py')
+    main.fen.destroy()
+    exit()
 
 def point(event):
     points.append((event.x,event.y))
@@ -144,7 +150,7 @@ def polygon(event) :
     main.bouton_trianguler.config(state=NORMAL)
 
     print(points)
-   
+
 def move(event):
     x, y = event.x, event.y
     if len(points)>=1:
@@ -192,7 +198,7 @@ def perso(index):
             f.write(sommet1+"\n")
             f.write(sommet2+"\n")
             f.write(sommet3+"\n")
-            
+
 
 def export():
     global canpoly
@@ -204,7 +210,7 @@ def export():
         save = points
         for el in points:
             f.write(str(el[0])+ "," + str(el[1]) +"\n")
-        f.close() 
+        f.close()
     print("export")
 
 
@@ -234,7 +240,7 @@ def openb():
                 main.canvas.delete("line2")
                 main.bouton_trianguler.config(state=NORMAL)
                 print("POINTS",points)
-                
+
 
 
 #-----Triangulation-----#
@@ -250,7 +256,7 @@ def gauche(points):
     return j
 
 def cotedroite(p0,p1,M):
-    return (p1[0]-p0[0])*(M[1]-p0[1])-(p1[1]-p0[1])*(M[0]-p0[0])  
+    return (p1[0]-p0[0])*(M[1]-p0[1])-(p1[1]-p0[1])*(M[0]-p0[0])
 
 def voisin_sommet(n,i,di):
     return (i+di)%n
@@ -341,6 +347,7 @@ def trianguler():
         main.bouton_coloration.config(state=NORMAL)
 
 
+
 def chiffre():
     global triliste
     if (len(points)>=4):
@@ -356,9 +363,8 @@ def segmentation(t1,t2):
     success = False
     if((t1[0] in t2 and t1[1] in t2)  or (t1[2] in t2 and t1[1] in t2) or (t1[0] in t2 and t1[2] in t2)):
         success = True
-        
-    return (success)
 
+    return (success)
 
 global bliste
 
@@ -371,7 +377,7 @@ def coloration():
     for el in triliste:
         bliste.append(el)
     for j in range (0,3):
-        main.canvas.create_oval(bliste[0][j][0] - 8, bliste[0][j][1] - 8, bliste[0][j][0]+8,bliste[0][j][1]+8, fill=colors[j],tags=str(bliste[0][j][0])+","+str(bliste[0][j][1]),width="2")      
+        main.canvas.create_oval(bliste[0][j][0] - 8, bliste[0][j][1] - 8, bliste[0][j][0]+8,bliste[0][j][1]+8, fill=colors[j],tags=str(bliste[0][j][0])+","+str(bliste[0][j][1]),width="2")
         if slowmode:
             main.fen.update()
             time.sleep(1)
@@ -404,7 +410,7 @@ def getPoint(t1,t2):
             if t1[i] == t2[j]:
                 liste.remove(t1[i])
     return (liste,colorb[0])
-        
+
 def getColor(pt):
     return (main.canvas.itemcget(main.canvas.find_withtag(str(pt[0])+","+str(pt[1])), "fill"))
 

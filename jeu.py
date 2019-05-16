@@ -1,6 +1,6 @@
 ###################################################################
 #Script	: Jeu #1
-#Bonus : jeu en multijoueur
+#Bonus : jeu en multijoueur ?
 #Auteurs : Paul Lefay et Pierre Bertier
 ###################################################################
 
@@ -10,6 +10,7 @@ from math import *
 from time import *
 import time
 import random
+import os
 
 
 
@@ -113,7 +114,7 @@ def leave():
         main.fen2.destroy()
     except:
         print("")
-    import menu as menub
+    os.system('python menu.py')
     exit()
 
 def getperso():
