@@ -35,7 +35,6 @@ def editeur():
 def jeu():
     fen.destroy()
     os.system('python jeu.py')
-    main.fen.destroy()
     exit()
 
 
@@ -90,6 +89,7 @@ fen = Tk()
 fen.title("Projet Maths Info | Paul & Pierre")
 
 canvas = Canvas(fen, bg="white", width=width, height= height)
+canvas.configure(cursor="target")
 logo=PhotoImage(file="menu.png")
 canvas.create_image(0,0,anchor=NW, image=logo)
 canvas.pack()

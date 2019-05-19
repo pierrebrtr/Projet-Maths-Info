@@ -11,13 +11,14 @@ from time import *
 import time
 import random
 import os
-
+from client import Network
+from _thread import *
 
 
 points = []
 global verif
 global triliste,canpoly,sommet1,sommet2,sommet3,width,height
-
+global sumb
 
 print("""
    _  ___  _ _
@@ -53,11 +54,20 @@ class Application:
 
         self.fen2 = Tk()
         self.fen2.title("Menu | JEU")
-        self.bouton_rand = Button(self.fen2, text="Random", bg = "yellow",command=randomg)
-        self.bouton_rand.pack()
+        self.bouton_rand = Button(self.fen2, text="Random", bg = "SpringGreen2",command=randomg)
+        self.bouton_rand.grid(row=1,column=1)
 
-        self.bouton_import = Button(self.fen2, text="Importer", bg = "brown2",command=importg)
-        self.bouton_import.pack()
+        self.textmenu = Label(self.fen2,text="Menu",font=("Helvetica", 16))
+        self.textmenu.grid(row=0,column=2)
+
+        self.bouton_import = Button(self.fen2, text="Importer", bg = "SpringGreen2",command=importg)
+        self.bouton_import.grid(row=1,column=3)
+
+        self.bouton_import = Button(self.fen2, text="En ligne", bg = "SpringGreen2",command=multiplayer)
+        self.bouton_import.grid(row=1,column=2)
+
+        self.bouton_leave = Button(self.fen2, text="Menu principal", bg = "brown2",command=leave)
+        self.bouton_leave.grid(row=3,column=2,pady=10)
 
         self.fen = Tk()
         self.fen.title("Jouer")
@@ -84,6 +94,11 @@ class Application:
     def clear(self):
         points.clear()
         main.canvas.delete("all")
+
+    def multi(self):
+        self.canvas2 = Canvas(self.fen, bg="white", width=width, height= height)
+        self.canvas2.configure(cursor="crosshair")
+        self.canvas2.pack(side="bottom")
 
 
 
@@ -142,6 +157,85 @@ def getperso():
 
 #-----Modes de jeu-----#
 
+global g,datab
+
+class Game:
+
+
+    def __init__(self):
+        global datab
+        datab = "none"
+        self.net = Network()
+        self.player = Player()
+        self.player2 = Player()
+
+
+    def update(self):
+        while True:
+            self.player2.up = self.parse_data(self.send_data())
+            print("RECV",self.player2.up)
+            time.sleep(1)
+
+    def send_data(self):
+        global datab
+        data = str(self.net.id) + ":" + str(datab)
+        reply = self.net.send(data)
+        return reply
+
+
+    @staticmethod
+    def parse_data(data):
+        try:
+            d = data.split(":")[1]
+            print("Data : ",d)
+            ###el = main.canvas.find_closest(x,y)
+            return d
+        except:
+            return 0
+
+class Player():
+
+    def __init__(self):
+        self.up = 0
+
+
+def multiplayer():
+    global g
+    main.multi()
+    main.clear()
+    net = Network()
+    g = Game()
+    conn = "yey"
+    start_new_thread(gupdate, (conn,))
+
+    fname = tkinter.filedialog.askopenfilename(filetypes=(('text files', 'txt'),))
+    if (fname):
+        with open(fname,"r") as f:
+            liste = [ligne.strip() for ligne in f]
+            for z in range(len(liste)):
+                el = liste[z].split(",")
+                (x,y) = int(el[0]),int(el[1])
+                liste[z] = (x,y)
+            for i in range(len(liste)):
+                x = liste[i][0]
+                y = liste[i][1]
+                points.append((x,y))
+                main.canvas.create_oval(x - 8, y - 8, x+8, y+8, fill="red",tags=[('first' if len(points) == 1 else 'sec'),"pt"],width="2",)
+                main.canvas.create_polygon(*points, fill='red',width=1,outline="black")
+                main.canvas2.create_oval(x - 8, y - 8, x+8, y+8, fill="red",tags=[('first' if len(points) == 1 else 'sec'),"pt"],width="2",)
+                main.canvas2.create_polygon(*points, fill='red',width=1,outline="black")
+        main.fen2.destroy()
+        main.bouton_valider.config(state=NORMAL)
+        startg()
+        startgb()
+
+
+def gupdate(*args):
+    g.update()
+
+
+
+
 def randomg():
     global width,height
     print("Random g")
@@ -180,23 +274,63 @@ def importg():
 #-----Début de partie-----#
 
 def startg():
+    global g
     trianguler()
     global sommet1,sommet2,sommet3
     colors = [sommet1,sommet2,sommet3]
-    global bliste,triliste
+    global bliste,triliste,sumb
+    sumb = []
+    for el in triliste:
+        sumb.append(el)
     bliste = []
     for el in triliste:
         bliste.append(el)
     for j in range (0,3):
-
         main.canvas.create_oval(bliste[0][j][0] - 8, bliste[0][j][1] - 8, bliste[0][j][0]+8,bliste[0][j][1]+8, fill=colors[j],tags=str(bliste[0][j][0])+","+str(bliste[0][j][1]),width="2")
         print("colorin",getColor(bliste[0][j]))
     for x in range(2,len(bliste)):
         for j in range (0,3):
             if not getColor(bliste[x][j]):
                 main.canvas.create_oval(bliste[x][j][0] - 8, bliste[x][j][1] - 8, bliste[x][j][0]+8,bliste[x][j][1]+8, fill="yellow",tags=str(bliste[x][j][0])+","+str(bliste[x][j][1]),width="2")
-                main.canvas.tag_bind((str(bliste[x][j][0])+","+str(bliste[x][j][1])), "<Button-1>", clickb)
+                main.canvas.tag_bind((str(bliste[x][j][0])+","+str(bliste[x][j][1])), "<Button-1>",clickbb)
 
+
+
+def startgb():
+    global sommet1,sommet2,sommet3
+    colors = [sommet1,sommet2,sommet3]
+    global bliste2,triliste,sumb
+    bliste2 = []
+    for el in sumb:
+        bliste2.append(el)
+    for j in range (0,3):
+        main.canvas2.create_oval(bliste2[0][j][0] - 8, bliste2[0][j][1] - 8, bliste2[0][j][0]+8,bliste2[0][j][1]+8, fill=colors[j],tags=str(bliste2[0][j][0])+","+str(bliste2[0][j][1]),width="2")
+    for x in range(2,len(bliste2)):
+        for j in range (0,3):
+            if not getColorb(bliste2[x][j]):
+                main.canvas2.create_oval(bliste2[x][j][0] - 8, bliste2[x][j][1] - 8, bliste2[x][j][0]+8,bliste2[x][j][1]+8, fill="yellow",tags=str(bliste2[x][j][0])+","+str(bliste2[x][j][1]),width="2")
+
+
+
+def clickbb(event):
+    global g,datab
+    global sommet1,sommet2,sommet3
+    x = event.x
+    y = event.y
+    el = main.canvas.find_closest(x,y)
+
+    color = main.canvas.itemcget(el, "fill")
+
+    if(color == "yellow"):
+        color = sommet1
+    elif(color == sommet1):
+        color = sommet2
+    elif (color == sommet2):
+        color = sommet3
+    elif (color == sommet3):
+        color = sommet1
+    datab = (x,y,color)
+    main.canvas.itemconfig(el, fill=color)
 
 
 def clickb(event):
@@ -214,7 +348,6 @@ def clickb(event):
     elif (color == sommet3):
         color = sommet1
     main.canvas.itemconfig(el, fill=color)
-
 
 def validate():
     print("Validation ...")
@@ -391,6 +524,10 @@ def getPoint(t1,t2):
 
 def getColor(pt):
     return (main.canvas.itemcget(main.canvas.find_withtag(str(pt[0])+","+str(pt[1])), "fill"))
+
+def getColorb(pt):
+    return (main.canvas2.itemcget(main.canvas2.find_withtag(str(pt[0])+","+str(pt[1])), "fill"))
+
 
 def recurTricolor(index,indexb):
     global verif

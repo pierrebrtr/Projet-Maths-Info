@@ -97,7 +97,7 @@ class Application:
         self.bouton_clear.grid(row=5,column =1,pady=10)
 
 
-        self.bouton_quitter = Button(self.frame, text="Quitter", bg = "red",command=leave)
+        self.bouton_quitter = Button(self.frame, text="Menu", bg = "red",command=leave)
         self.bouton_quitter.grid(row=6,column =1,pady=10)
 
         self.bouton_chiffre = Button(self.frame, text="Chiffres", bg = "green",command=chiffre)
@@ -125,8 +125,8 @@ class Application:
 
 
 def leave():
-    os.system('python menu.py')
     main.fen.destroy()
+    os.system('python menu.py')
     exit()
 
 def point(event):
