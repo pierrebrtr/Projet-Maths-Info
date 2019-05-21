@@ -1,10 +1,14 @@
+###################################################################
+#Script	: Serveur
+#Auteurs : Paul Lefay et Pierre Bertier
+###################################################################
 import socket
 from _thread import *
 import sys
 import time
+import os
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
 server = ''
 port = 5555
 
@@ -35,19 +39,20 @@ def threaded_client(conn):
             arr = reply.split(":")
             id = int(arr[0])
             pos[id] = reply
-
             if id == 0: nid = 1
             if id == 1: nid = 0
-
             reply = pos[nid][:]
             print("Envoi: " + reply)
-
             conn.sendall(str.encode(reply))
         except:
             break
-
     print("Fermeture de connexion")
     conn.close()
+    currentId = "0"
+    pos = ["0:NONE", "1:NONE"]
+
+
+
 
 while True:
     conn, addr = s.accept()

@@ -1,6 +1,6 @@
 ###################################################################
 #Script	: Jeu #1
-#Bonus : jeu en multijoueur ?
+#Bonus : Jeu en multijoueur en temps réel !
 #Auteurs : Paul Lefay et Pierre Bertier
 ###################################################################
 
@@ -30,8 +30,6 @@ n_| || _| | U |
 
 """)
 
-
-
 def demarrer(w = 500, h = 500):
     global width
     global height
@@ -41,11 +39,7 @@ def demarrer(w = 500, h = 500):
     main = Application()
     main.fen2.mainloop()
     main.fen.mainloop()
-
-
     return
-
-
 
 #-----Classe principale-----#
 
@@ -76,8 +70,6 @@ class Application:
         self.fen = Tk()
         self.fen.title("Jouer")
 
-
-
         self.canvas = Canvas(self.fen, bg="white", width=width, height= height)
         self.canvas.configure(cursor="crosshair")
         self.canvas.pack(side="left")
@@ -96,9 +88,6 @@ class Application:
 
         self.bouton_quitter = Button(self.frame, text="Menu", bg = "red",command=leave)
         self.bouton_quitter.grid(row=3,column =1,pady=10)
-
-
-
 
     def clear(self):
         points.clear()
@@ -150,7 +139,7 @@ def getperso():
             sommet2 = lines[2].strip().replace(" ", "")
             sommet3 = lines[3].strip().replace(" ", "")
     except :
-        #si le fichier n'existe pas :
+        #Si le fichier n'existe pas :
         print("Problème sur le fichier, résolution en cours")
         sommet1 = "red"
         sommet2 = "green"
@@ -220,16 +209,9 @@ class Game:
                     colorm = d.split(",")[2].replace(")","")
                     colorm = colorm.replace("'","")
                     colorm = colorm.replace(" ","")
-                    g.cnvup()
-
-            ###el = main.canvas.find_closest(x,y)
             return d
         except:
             return 0
-
-
-
-
 
 
 def updatep2():
@@ -238,7 +220,6 @@ def updatep2():
         main.canvas2.itemconfig(el, fill=colorm)
     except Exception as e: pass
     main.fen.after(50, updatep2)
-
 
 
 class Player():
