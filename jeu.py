@@ -13,12 +13,14 @@ import random
 import os
 from client import Network
 from _thread import *
-
+from tkinter import messagebox
+import queue
 
 points = []
 global verif
 global triliste,canpoly,sommet1,sommet2,sommet3,width,height
 global sumb
+global winmulti
 
 print("""
    _  ___  _ _
@@ -60,6 +62,8 @@ class Application:
         self.textmenu = Label(self.fen2,text="Menu",font=("Helvetica", 16))
         self.textmenu.grid(row=0,column=2)
 
+
+
         self.bouton_import = Button(self.fen2, text="Importer", bg = "SpringGreen2",command=importg)
         self.bouton_import.grid(row=1,column=3)
 
@@ -78,6 +82,8 @@ class Application:
         self.canvas.configure(cursor="crosshair")
         self.canvas.pack(side="left")
 
+
+
         self.frame = Frame(self.fen)
         self.frame.pack(side="right")
 
@@ -88,8 +94,11 @@ class Application:
         self.bouton_valider.grid(row=2,column =1,pady=10)
         self.bouton_valider.config(state=DISABLED)
 
-        self.bouton_quitter = Button(self.frame, text="Menu principal", bg = "red",command=leave)
+        self.bouton_quitter = Button(self.frame, text="Menu", bg = "red",command=leave)
         self.bouton_quitter.grid(row=3,column =1,pady=10)
+
+
+
 
     def clear(self):
         points.clear()
@@ -158,12 +167,14 @@ def getperso():
 #-----Modes de jeu-----#
 
 global g,datab
+global xm,ym,colorm
 
 class Game:
 
 
     def __init__(self):
-        global datab
+        global datab,winmulti
+        winmulti = False
         datab = "none"
         self.net = Network()
         self.player = Player()
@@ -171,10 +182,14 @@ class Game:
 
 
     def update(self):
-        while True:
+        global winmulti,datab
+        while winmulti != True:
             self.player2.up = self.parse_data(self.send_data())
             print("RECV",self.player2.up)
             time.sleep(1)
+        datab = "WINNER"
+        self.player2.up = self.parse_data(self.send_data())
+        time.sleep(1)
 
     def send_data(self):
         global datab
@@ -185,13 +200,46 @@ class Game:
 
     @staticmethod
     def parse_data(data):
+        global xm,ym,colorm,g
         try:
             d = data.split(":")[1]
             print("Data : ",d)
+            if ("WINNER" in d):
+                if messagebox.askyesno("C'est perdu !","Dommage ! Rejouer ?"):
+                    main.fen.destroy()
+                    os.system('python jeu.py')
+                else:
+                    main.fen.destroy()
+                    os.system('python menu.py')
+            else:
+                if("NONE" not in d):
+                    xm = d.split(",")[0].replace("(","")
+                    xm = int(xm.replace(" ",""))
+                    ym = d.split(",")[1]
+                    ym = int(ym.replace(" ",""))
+                    colorm = d.split(",")[2].replace(")","")
+                    colorm = colorm.replace("'","")
+                    colorm = colorm.replace(" ","")
+                    g.cnvup()
+
             ###el = main.canvas.find_closest(x,y)
             return d
         except:
             return 0
+
+
+
+
+
+
+def updatep2():
+    try:
+        el = main.canvas2.find_closest(xm,ym)
+        main.canvas2.itemconfig(el, fill=colorm)
+    except Exception as e: pass
+    main.fen.after(50, updatep2)
+
+
 
 class Player():
 
@@ -200,6 +248,7 @@ class Player():
 
 
 def multiplayer():
+    global xm,ym,colorm
     global g
     main.multi()
     main.clear()
@@ -226,14 +275,16 @@ def multiplayer():
                 main.canvas2.create_polygon(*points, fill='red',width=1,outline="black")
         main.fen2.destroy()
         main.bouton_valider.config(state=NORMAL)
+        main.bouton_valider.config(command=validateb)
         startg()
         startgb()
+
+        updatep2()
+        main.fen.mainloop()
 
 
 def gupdate(*args):
     g.update()
-
-
 
 
 def randomg():
@@ -311,7 +362,6 @@ def startgb():
                 main.canvas2.create_oval(bliste2[x][j][0] - 8, bliste2[x][j][1] - 8, bliste2[x][j][0]+8,bliste2[x][j][1]+8, fill="yellow",tags=str(bliste2[x][j][0])+","+str(bliste2[x][j][1]),width="2")
 
 
-
 def clickbb(event):
     global g,datab
     global sommet1,sommet2,sommet3
@@ -350,17 +400,49 @@ def clickb(event):
     main.canvas.itemconfig(el, fill=color)
 
 def validate():
-    print("Validation ...")
     init = []
     global bliste,verif
     for el in bliste:
         for j in range(0,3):
             if ((el[j][0],el[j][1]),getColor(el[j])) not in init :
                 init.append(((el[j][0],el[j][1]),getColor(el[j])))
-    print("INIT", init)
     coloration()
     if verif == init:
-        print("WINNNNNN")
+        print("-> WIN")
+        if messagebox.askyesno("C'est gagné !","Rejouer ?"):
+            main.fen.destroy()
+            os.system('python jeu.py')
+        else:
+            main.fen.destroy()
+            os.system('python menu.py')
+    else :
+        messagebox.showinfo("Perdu", "Hum, il me semble que cela ne soit pas la bonne réponse")
+
+def validateb():
+    global winmulti
+    init = []
+    global bliste,verif
+    for el in bliste:
+        for j in range(0,3):
+            if ((el[j][0],el[j][1]),getColor(el[j])) not in init :
+                init.append(((el[j][0],el[j][1]),getColor(el[j])))
+    coloration()
+
+    if verif == init:
+        winmulti = True
+        print("-> WIN")
+        if messagebox.askyesno("C'est gagné !","Rejouer ?"):
+            main.fen.destroy()
+            os.system('python jeu.py')
+            report.print()
+        else:
+            main.fen.destroy()
+            os.system('python menu.py')
+    else :
+        messagebox.showinfo("Perdu", "Hum, il me semble que cela ne soit pas la bonne réponse")
+
+
+
 
 
 #-----Triangulation-----#

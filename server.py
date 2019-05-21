@@ -17,10 +17,10 @@ except socket.error as e:
     print(str(e))
 
 s.listen(2)
-print("Waiting for a connection")
+print("En attente d'une connexion")
 
 currentId = "0"
-pos = ["0:50,50", "1:100,100"]
+pos = ["0:NONE", "1:NONE"]
 def threaded_client(conn):
     global currentId, pos
     conn.send(str.encode(currentId))
@@ -31,7 +31,7 @@ def threaded_client(conn):
         try:
             data = conn.recv(2048)
             reply = data.decode('utf-8')
-            print("Recieved: " + reply)
+            print("Reception: " + reply)
             arr = reply.split(":")
             id = int(arr[0])
             pos[id] = reply
@@ -40,17 +40,17 @@ def threaded_client(conn):
             if id == 1: nid = 0
 
             reply = pos[nid][:]
-            print("Sending: " + reply)
+            print("Envoi: " + reply)
 
             conn.sendall(str.encode(reply))
         except:
             break
 
-    print("Connection Closed")
+    print("Fermeture de connexion")
     conn.close()
 
 while True:
     conn, addr = s.accept()
-    print("Connected to: ", addr)
+    print("Connecté à: ", addr)
 
     start_new_thread(threaded_client, (conn,))
