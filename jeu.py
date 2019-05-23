@@ -39,6 +39,7 @@ n_| || _| | U |
 
 """)
 
+#Initialisation de l'application
 def demarrer(w = 500, h = 500):
     global width
     global height
@@ -52,6 +53,7 @@ def demarrer(w = 500, h = 500):
 
 #-----Classe principale-----#
 
+#Application principale
 class Application:
 
     def __init__(self):
@@ -81,8 +83,6 @@ class Application:
         self.canvas.configure(cursor="crosshair")
         self.canvas.pack(side="left")
 
-
-
         self.frame = Frame(self.fen)
         self.frame.pack(side="right")
 
@@ -106,7 +106,7 @@ class Application:
         self.canvas2.pack(side="bottom")
 
 
-
+#Fonction permettant de créer un point au click de la souris
 def point(event):
     points.append((event.x,event.y))
     if(len(points) >= 2):
@@ -117,6 +117,7 @@ def point(event):
     main.canvas.tag_bind("first","<Button-1>",polygon)
     return points
 
+#Fonction permettant de créer le polygone suite au click de fermeture avec le premier point créé
 def polygon(event) :
     global canpoly
     canpoly = True
@@ -127,7 +128,7 @@ def polygon(event) :
     main.canvas.delete("line2")
     print(points)
 
-
+#Fonction permettant de retourner au menu principal
 def leave():
     try:
         main.fen.destroy()
@@ -137,6 +138,7 @@ def leave():
     os.system('python menu.py')
     exit()
 
+#Fonction qui récupère les données de personnalisation
 def getperso():
     global sommet1,sommet2,sommet3
     try:
@@ -162,6 +164,7 @@ def getperso():
 
 #-----Modes de jeu-----#
 
+#Classe permettant de manipuler la partie multijoueur
 global g,datab
 global xm,ym,colorm
 
@@ -231,6 +234,7 @@ class Game:
             return 0
 
 
+#Fonction actualisant le canvas n°2
 def updatep2():
     try:
         el = main.canvas2.find_closest(xm,ym)
@@ -238,13 +242,13 @@ def updatep2():
     except Exception as e: pass
     main.fen.after(50, updatep2)
 
-
+#Classe gérant le joueur en multijoueur
 class Player():
 
     def __init__(self):
         self.up = 0
 
-
+#Fonction permettant de configurer la partie multijoueur
 def multiplayer():
     global xm,ym,colorm
     global g
@@ -279,11 +283,10 @@ def multiplayer():
         updatep2()
         main.fen.mainloop()
 
-
 def gupdate(*args):
     g.update()
 
-
+#Fonction permettant de configurer une partie en mode aléatoire
 def randomg():
     global width,height
     print("Random g")
@@ -297,6 +300,7 @@ def randomg():
         main.canvas.create_oval(x - 8, y - 8, x+8, y+8, fill="red",tags=[('first' if len(points) == 1 else 'sec'),"pt"],width="2",)
         main.canvas.create_polygon(*points, fill='red',width=1,outline="black")
 
+#Fonction permettant de configurer une partie en mode import
 def importg():
     main.clear()
     fname = tkinter.filedialog.askopenfilename(filetypes=(('text files', 'txt'),))
@@ -321,6 +325,7 @@ def importg():
 
 #-----Début de partie-----#
 
+#Fonction permettant de demarrer une partie après l'import
 def startg():
     global g
     trianguler()
@@ -343,7 +348,7 @@ def startg():
                 main.canvas.tag_bind((str(bliste[x][j][0])+","+str(bliste[x][j][1])), "<Button-1>",clickbb)
 
 
-
+#Fonction permettant de demarrer une partie après l'import bis
 def startgb():
     global sommet1,sommet2,sommet3
     colors = [sommet1,sommet2,sommet3]
@@ -358,7 +363,7 @@ def startgb():
             if not getColorb(bliste2[x][j]):
                 main.canvas2.create_oval(bliste2[x][j][0] - 8, bliste2[x][j][1] - 8, bliste2[x][j][0]+8,bliste2[x][j][1]+8, fill="yellow",tags=str(bliste2[x][j][0])+","+str(bliste2[x][j][1]),width="2")
 
-
+#Fonction permettant de changer la couleur du point cliqué
 def clickbb(event):
     global g,datab
     global sommet1,sommet2,sommet3
@@ -379,7 +384,7 @@ def clickbb(event):
     datab = (x,y,color)
     main.canvas.itemconfig(el, fill=color)
 
-
+#Fonction permettant de changer la couleur du point cliqué bis
 def clickb(event):
     global sommet1,sommet2,sommet3
     x = event.x
@@ -396,6 +401,7 @@ def clickb(event):
         color = sommet1
     main.canvas.itemconfig(el, fill=color)
 
+#Fonction validant la tricoloration ou non (Mode solo)
 def validate():
     init = []
     global bliste,verif
@@ -415,6 +421,7 @@ def validate():
     else :
         messagebox.showinfo("Perdu", "Hum, il me semble que cela ne soit pas la bonne réponse")
 
+#Fonction validant la tricoloration ou non (Mode multijoueur)
 def validateb():
     global winmulti
     init = []
@@ -424,7 +431,6 @@ def validateb():
             if ((el[j][0],el[j][1]),getColor(el[j])) not in init :
                 init.append(((el[j][0],el[j][1]),getColor(el[j])))
     coloration()
-
     if verif == init:
         winmulti = True
         print("-> WIN")
