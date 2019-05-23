@@ -15,7 +15,7 @@ print("""
 |_| |_||___||_|\_||___|
 """)
 
-
+#Fonction permettant l'animation d'un polynome avec un angle défini
 def animate(angle,array):
     angle_degrees=angle
     cangle = cmath.exp(angle_degrees*1j*math.pi/180)
@@ -27,17 +27,18 @@ def animate(angle,array):
         newxy.append(v.imag)
     canvas.coords(polygon_item, *newxy)
 
+#Lancer l'éditeur
 def editeur():
     fen.destroy()
     os.system('python projet.py')
     exit()
-
+#Lancer le jeu
 def jeu():
     fen.destroy()
     os.system('python jeu.py')
     exit()
 
-
+#Test de la zone de click afin de lancer le programme correspondant
 def click(event):
     x= event.x
     y = event.y
@@ -48,6 +49,7 @@ def click(event):
     if (x > 565 and x < 670 and y > 450 and y < 480):
         fen.destroy()
 
+#Fonction permettant l'affichage d'un surlignement sur un bouton
 def anchor(event):
     x= event.x
     y = event.y
@@ -102,6 +104,7 @@ triangle = [(365, 167), (337, 233), (392, 235)]
 polygon_item = canvas.create_polygon(triangle,fill="red")
 center = 350, 350
 i = 0
+#Animation en boucle du triangle
 while True:
     try :
         i = i + 1

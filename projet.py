@@ -31,6 +31,7 @@ global triliste,canpoly,slowmode,sommet1,sommet2,sommet3,cam
 
 #-----Initialisation-----#
 
+#Initialisation de l'application
 def demarrer(w = 500, h = 500):
     global width
     global height
@@ -49,6 +50,7 @@ def demarrer(w = 500, h = 500):
 
 #-----Classe principale-----#
 
+#Application principale
 class Application:
 
     def __init__(self):
@@ -118,6 +120,7 @@ class Application:
         self.bouton_slow = Checkbutton(self.frame, text="Ralentir", command=self.slow_mode, variable=self.var)
         self.bouton_slow.grid(row=8,column =1,pady=10)
 
+    #Fonction permettant d'effacer l'écran et de réinitialiser tout le programme
     def clear(self):
         global canpoly
         canpoly = False
@@ -130,17 +133,19 @@ class Application:
         main.bouton_chiffre.config(state=DISABLED)
         main.bouton_camera.config(state=DISABLED)
 
+    #Fonction permettant de ralentir les calculs afin d'observer plus facilement les calculs
     def slow_mode(event):
         global slowmode
         slowmode = event.var.get()
         print("Ralentissement ? :",event.var.get())
 
-
+#Fonction permettant de retourner au menu principal
 def leave():
     main.fen.destroy()
     os.system('python menu.py')
     exit()
 
+#Fonction permettant de créer un point au click de la souris
 def point(event):
     points.append((event.x,event.y))
     if(len(points) >= 2):
@@ -151,6 +156,7 @@ def point(event):
     main.canvas.tag_bind("first","<Button-1>",polygon)
     return points
 
+#Fonction permettant de créer le polygone suite au click de fermeture avec le premier point créé
 def polygon(event) :
     global canpoly
     canpoly = True
@@ -163,6 +169,8 @@ def polygon(event) :
 
     print(points)
 
+#Fonction liée au processus de prévisualisation d'un segement entre un point créé
+#et un point encore inexistant
 def move(event):
     x, y = event.x, event.y
     if len(points)>=1:
@@ -174,6 +182,7 @@ def move(event):
 
 #-----Menu bis-----#
 
+#Fonction qui récupère les données de personnalisation
 def getperso():
     global sommet1,sommet2,sommet3
     try:
@@ -195,6 +204,7 @@ def getperso():
             f.write("blue\n")
             f.close()
 
+#Dialogue de demande de personnalisation de couleur
 def perso(index):
     global sommet1,sommet2,sommet3
     color = tkinter.colorchooser.askcolor()[1]
@@ -211,7 +221,7 @@ def perso(index):
             f.write(sommet2+"\n")
             f.write(sommet3+"\n")
 
-
+#Exportation d'un polygone
 def export():
     global canpoly
     if (canpoly) :
@@ -225,7 +235,7 @@ def export():
         f.close()
     print("export")
 
-
+#Fonction permettant l'importation d'un polygone à partir d'un fichier texte
 def openb():
     global canpoly
     canpoly = True
@@ -255,6 +265,7 @@ def openb():
 
 #-----Triangulation-----#
 
+#Fonction renvoyant le point le plus à gauche du polygone
 def gauche(points):
     n = len(points)
     x = points[0][0]
@@ -265,18 +276,22 @@ def gauche(points):
             j = i
     return j
 
+#Fonction permettant de savoir de quel coté d'une droite le point se situe
 def cotedroite(p0,p1,M):
     return (p1[0]-p0[0])*(M[1]-p0[1])-(p1[1]-p0[1])*(M[0]-p0[0])
 
+#Fonction renvoyant l'index suivant d'un point selon l'écart selectionné
 def voisin_sommet(n,i,di):
     return (i+di)%n
 
+#Fonction permettant de savoir si un point est dans un triangle
 def danstriangle(triangle,M):
     p1 = triangle[0]
     p2 = triangle[1]
     p3 = triangle[2]
     return cotedroite(p1,p2,M) > 0 and cotedroite(p2,p3,M) > 0 and cotedroite(p3,p1,M) > 0
 
+#Fonction renvoyant l'indice du point étant le plus éloigné de p1 et p2 et étant dans le triangle
 def sommetmax(points,p0,p1,p2,index):
     n = len(points)
     distance = 0.0
@@ -291,6 +306,7 @@ def sommetmax(points,p0,p1,p2,index):
                     j=i
     return j
 
+#Fonction générant un polygon à partir des indices fournis
 def poly(points,start,finish):
     n = len(points)
     p= []
@@ -301,7 +317,7 @@ def poly(points,start,finish):
     p.append(points[finish])
     return p
 
-
+#Fonction récursive permettant le calcul de la triangulation
 def triangulationb(points,triliste):
     n = len(points)
     j0 = gauche(points)
@@ -331,11 +347,13 @@ def triangulationb(points,triliste):
             triangulationb(polybb,triliste)
     return triliste
 
+#Fonction renvoyant la liste des triangles issus de la triangulation
 def triangulerbis(points):
     liste = []
     triangulationb(points,liste)
     return liste
 
+#Fonction permettant de tracer les triangles issus de la triangulation
 def drawT(liste):
     for triangle in liste:
         main.canvas.create_line(triangle[0][0],triangle[0][1],triangle[1][0],triangle[1][1], tags="triangl", width= 1)
@@ -345,6 +363,7 @@ def drawT(liste):
             main.fen.update()
             time.sleep(1)
 
+#Fonction principale gérant la triangulation
 def trianguler():
     global triliste
     if len(points)>=4:
@@ -357,6 +376,7 @@ def trianguler():
         main.bouton_camera.config(state=NORMAL)
         main.bouton_coloration.config(state=NORMAL)
 
+#Fonction affichant l'index du triangle sur le triangle
 def chiffre():
     global triliste
     if (len(points)>=4):
@@ -366,6 +386,7 @@ def chiffre():
             y = (liste[i][0][1]+liste[i][1][1]+liste[i][2][1])/3
             main.canvas.create_text(x,y,text=i)
 
+#Fonction affichant l'image caméra  sur le triangle
 def camera():
     print("CAMERAS")
     global triliste,cam
@@ -379,6 +400,8 @@ def camera():
 
 #-----Tri-Coloration-----#
 
+#Fonction permettant de savoir si un point d'un triangle est lié à un autre triangle
+#Afin de savoir si un triangle est collé au premier
 def segmentation(t1,t2):
     success = False
     if((t1[0] in t2 and t1[1] in t2)  or (t1[2] in t2 and t1[1] in t2) or (t1[0] in t2 and t1[2] in t2)):
@@ -388,6 +411,7 @@ def segmentation(t1,t2):
 
 global bliste
 
+#Fonction principale pour la tri-coloration
 def coloration():
     global sommet1,sommet2,sommet3
     start = perf_counter()
@@ -411,6 +435,7 @@ def coloration():
     dt = perf_counter() - start
     print("Performance tri-coloration :",round(dt * 10**3, 2), " ms pour ", len(points), "points")
 
+#Fonction renvoyant la couleur et les coordonnées du point qui n'est pas encore coloré sur les deux triangles
 def getPoint(t1,t2):
     color = []
     colorb = []
@@ -431,9 +456,12 @@ def getPoint(t1,t2):
                 liste.remove(t1[i])
     return (liste,colorb[0])
 
+#Fonction renvoyant la couleur d'un point
 def getColor(pt):
     return (main.canvas.itemcget(main.canvas.find_withtag(str(pt[0])+","+str(pt[1])), "fill"))
 
+#Sous-fonction récursive permettant la tricoloration à partir d'un index de triangle et du triangle précédent
+#permettant ainsi d'empecher la recoloration du triangle précédent
 def recurTricolor(index,indexb):
     global slowmode
     global bliste

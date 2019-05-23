@@ -172,7 +172,17 @@ class Game:
         global datab,winmulti
         winmulti = False
         datab = "none"
-        self.net = Network()
+        try:
+            self.net = Network()
+        except:
+            print("Erreur de connexion")
+            try:
+                main.fen.destroy()
+                main.fen2.destroy()
+            except:
+                print("")
+            os.system('python jeu.py')
+            exit()
         self.player = Player()
         self.player2 = Player()
 
@@ -240,7 +250,6 @@ def multiplayer():
     global g
     main.multi()
     main.clear()
-    net = Network()
     g = Game()
     conn = "yey"
     start_new_thread(gupdate, (conn,))
@@ -435,6 +444,7 @@ def validateb():
 
 #-----Triangulation-----#
 
+#Fonction renvoyant le point le plus à gauche du polygone
 def gauche(points):
     n = len(points)
     x = points[0][0]
@@ -445,18 +455,22 @@ def gauche(points):
             j = i
     return j
 
+#Fonction permettant de savoir de quel coté d'une droite le point se situe
 def cotedroite(p0,p1,M):
     return (p1[0]-p0[0])*(M[1]-p0[1])-(p1[1]-p0[1])*(M[0]-p0[0])
 
+#Fonction renvoyant l'index suivant d'un point selon l'écart selectionné
 def voisin_sommet(n,i,di):
     return (i+di)%n
 
+#Fonction permettant de savoir si un point est dans un triangle
 def danstriangle(triangle,M):
     p1 = triangle[0]
     p2 = triangle[1]
     p3 = triangle[2]
     return cotedroite(p1,p2,M) > 0 and cotedroite(p2,p3,M) > 0 and cotedroite(p3,p1,M) > 0
 
+#Fonction renvoyant l'indice du point étant le plus éloigné de p1 et p2 et étant dans le triangle
 def sommetmax(points,p0,p1,p2,index):
     n = len(points)
     distance = 0.0
@@ -471,6 +485,7 @@ def sommetmax(points,p0,p1,p2,index):
                     j=i
     return j
 
+#Fonction générant un polygon à partir des indices fournis
 def poly(points,start,finish):
     n = len(points)
     p= []
@@ -481,7 +496,7 @@ def poly(points,start,finish):
     p.append(points[finish])
     return p
 
-
+#Fonction récursive permettant le calcul de la triangulation
 def triangulationb(points,triliste):
     n = len(points)
     j0 = gauche(points)
@@ -511,17 +526,20 @@ def triangulationb(points,triliste):
             triangulationb(polybb,triliste)
     return triliste
 
+#Fonction renvoyant la liste des triangles issus de la triangulation
 def triangulerbis(points):
     liste = []
     triangulationb(points,liste)
     return liste
 
+#Fonction permettant de tracer les triangles issus de la triangulation
 def drawT(liste):
     for triangle in liste:
         main.canvas.create_line(triangle[0][0],triangle[0][1],triangle[1][0],triangle[1][1], tags="triangl", width= 1)
         main.canvas.create_line(triangle[0][0],triangle[0][1],triangle[2][0],triangle[2][1], tags="triangl", width= 1)
         main.canvas.create_line(triangle[1][0],triangle[1][1],triangle[2][0],triangle[2][1], tags="triangl", width= 1)
 
+#Fonction principale gérant la triangulation
 def trianguler():
     global triliste
     if len(points)>=4:
@@ -532,17 +550,10 @@ def trianguler():
         print("Performance triangulation:",round(dt * 10**3, 2), " ms pour ", len(points), "points")
 
 
-def chiffre():
-    global triliste
-    if (len(points)>=4):
-        liste = triliste
-        for i in range(len(liste)):
-            x = (liste[i][0][0]+liste[i][1][0]+liste[i][2][0])/3
-            y = (liste[i][0][1]+liste[i][1][1]+liste[i][2][1])/3
-            main.canvas.create_text(x,y,text=i)
-
 #-----Tri-Coloration-----#
 
+#Fonction permettant de savoir si un point d'un triangle est lié à un autre triangle
+#Afin de savoir si un triangle est collé au premier
 def segmentation(t1,t2):
     success = False
     if((t1[0] in t2 and t1[1] in t2)  or (t1[2] in t2 and t1[1] in t2) or (t1[0] in t2 and t1[2] in t2)):
@@ -553,6 +564,7 @@ def segmentation(t1,t2):
 
 global bliste
 
+#Fonction principale pour la tri-coloration
 def coloration():
     global sommet1,sommet2,sommet3,verif
     verif = []
@@ -572,6 +584,7 @@ def coloration():
         recurTricolor(el,0)
     print("LISTE VERIF", verif)
 
+#Fonction renvoyant la couleur et les coordonnées du point qui n'est pas encore coloré sur les deux triangles
 def getPoint(t1,t2):
     color = []
     colorb = []
@@ -592,13 +605,16 @@ def getPoint(t1,t2):
                 liste.remove(t1[i])
     return (liste,colorb[0])
 
+#Fonction renvoyant la couleur d'un point
 def getColor(pt):
     return (main.canvas.itemcget(main.canvas.find_withtag(str(pt[0])+","+str(pt[1])), "fill"))
 
+#Fonction renvoyant la couleur d'un point sur le deuxieme canvas
 def getColorb(pt):
     return (main.canvas2.itemcget(main.canvas2.find_withtag(str(pt[0])+","+str(pt[1])), "fill"))
 
-
+#Sous-fonction récursive permettant la tricoloration à partir d'un index de triangle et du triangle précédent
+#permettant ainsi d'empecher la recoloration du triangle précédent
 def recurTricolor(index,indexb):
     global verif
     global bliste
