@@ -97,8 +97,6 @@ canvas.pack()
 canvas.bind("<Button-1>", click)
 canvas.bind("<Motion>",anchor)
 
-
-
 triangle = [(365, 167), (337, 233), (392, 235)]
 
 polygon_item = canvas.create_polygon(triangle,fill="red")

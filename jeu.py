@@ -2,6 +2,15 @@
 #Script	: Jeu #1
 #Bonus : Jeu en multijoueur en temps réel !
 #Auteurs : Paul Lefay et Pierre Bertier
+##################################################################
+    #Tableau des variables:
+    #verif -> Liste verifiant si la partie est gagnée
+    #triliste,bliste,sumb  -> Liste des triangles après la triangulation
+    #canpoly-> Test pour savoir si le polygone peut être tracé
+    #sommet1,2,3 -> Couleurs liées au fichier de personnalisation
+    #winmulti -> Booléen testant l'issue de la partie
+    #g -> Classe liée à la partie multijoueur
+    #datab,xm,ym,colorm -> Données transferées entre les threads
 ###################################################################
 
 from tkinter import *
@@ -55,8 +64,6 @@ class Application:
 
         self.textmenu = Label(self.fen2,text="Menu",font=("Helvetica", 16))
         self.textmenu.grid(row=0,column=2)
-
-
 
         self.bouton_import = Button(self.fen2, text="Importer", bg = "SpringGreen2",command=importg)
         self.bouton_import.grid(row=1,column=3)

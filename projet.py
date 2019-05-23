@@ -2,7 +2,12 @@
 #Script	: Editeur de polygones + triangulation + tricoloration
 #Auteurs : Paul Lefay et Pierre Bertier
 ###################################################################
-
+    #Tableau des variables:
+    #triliste,bliste -> Liste des triangles après la triangulation
+    #canpoly-> Test pour savoir si le polygone peut être tracé
+    #sommet1,2,3 -> Couleurs liées au fichier de personnalisation
+    #cam -> Fichier image caméra
+###################################################################
 from tkinter import *
 import tkinter.filedialog
 import tkinter.colorchooser
@@ -22,7 +27,7 @@ print("""
 """)
 
 points = []
-global triliste,canpoly,slowmode,sommet1,sommet2,sommet3
+global triliste,canpoly,slowmode,sommet1,sommet2,sommet3,cam
 
 #-----Initialisation-----#
 
@@ -30,6 +35,7 @@ def demarrer(w = 500, h = 500):
     global width
     global height
     global main
+    global cam
     width = w
     height = h
     main = Application()
@@ -37,8 +43,8 @@ def demarrer(w = 500, h = 500):
     main.canvas.bind("<Button-3>", Application.clear)
     main.canvas.bind('<Motion>', move)
     main.canvas.old_coords = None
+    cam=PhotoImage(file="camera.png")
     main.fen.mainloop()
-
     return
 
 #-----Classe principale-----#
@@ -90,22 +96,27 @@ class Application:
         self.bouton_trianguler.config(state=DISABLED)
 
         self.bouton_coloration = Button(self.frame, text="Coloration", bg = "blue",command=coloration)
-        self.bouton_coloration.grid(row=4,column =1,pady=10)
+        self.bouton_coloration.grid(row=5,column =1,pady=10)
         self.bouton_coloration.config(state=DISABLED)
 
         self.bouton_clear = Button(self.frame, text="Effacer", bg = "grey",command=self.clear)
-        self.bouton_clear.grid(row=5,column =1,pady=10)
+        self.bouton_clear.grid(row=6,column =1,pady=10)
 
 
         self.bouton_quitter = Button(self.frame, text="Menu", bg = "red",command=leave)
-        self.bouton_quitter.grid(row=6,column =1,pady=10)
+        self.bouton_quitter.grid(row=7,column =1,pady=10)
 
-        self.bouton_chiffre = Button(self.frame, text="Chiffres", bg = "green",command=chiffre)
+
+        self.bouton_camera = Button(self.frame, text="Chiffres", bg = "green",command=chiffre)
+        self.bouton_camera.grid(row=4,column =1,pady=10)
+        self.bouton_camera.config(state=DISABLED)
+
+        self.bouton_chiffre = Button(self.frame, text="Cameras", bg = "green",command=camera)
         self.bouton_chiffre.grid(row=3,column =1,pady=10)
         self.bouton_chiffre.config(state=DISABLED)
         self.var = IntVar()
-        self.bouton_slow = Checkbutton(self.frame, text="Slow mode", command=self.slow_mode, variable=self.var)
-        self.bouton_slow.grid(row=7,column =1,pady=10)
+        self.bouton_slow = Checkbutton(self.frame, text="Ralentir", command=self.slow_mode, variable=self.var)
+        self.bouton_slow.grid(row=8,column =1,pady=10)
 
     def clear(self):
         global canpoly
@@ -117,11 +128,12 @@ class Application:
         main.bouton_trianguler.config(state=DISABLED)
         main.bouton_coloration.config(state=DISABLED)
         main.bouton_chiffre.config(state=DISABLED)
+        main.bouton_camera.config(state=DISABLED)
 
     def slow_mode(event):
         global slowmode
         slowmode = event.var.get()
-        print("Slowmode :",event.var.get())
+        print("Ralentissement ? :",event.var.get())
 
 
 def leave():
@@ -241,8 +253,6 @@ def openb():
                 main.bouton_trianguler.config(state=NORMAL)
                 print("POINTS",points)
 
-
-
 #-----Triangulation-----#
 
 def gauche(points):
@@ -344,9 +354,8 @@ def trianguler():
         dt = perf_counter() - start
         print("Performance triangulation:",round(dt * 10**3, 2), " ms pour ", len(points), "points")
         main.bouton_chiffre.config(state=NORMAL)
+        main.bouton_camera.config(state=NORMAL)
         main.bouton_coloration.config(state=NORMAL)
-
-
 
 def chiffre():
     global triliste
@@ -356,6 +365,17 @@ def chiffre():
             x = (liste[i][0][0]+liste[i][1][0]+liste[i][2][0])/3
             y = (liste[i][0][1]+liste[i][1][1]+liste[i][2][1])/3
             main.canvas.create_text(x,y,text=i)
+
+def camera():
+    print("CAMERAS")
+    global triliste,cam
+    if (len(points)>=4):
+        liste = triliste
+        for i in range(len(liste)):
+            x = (liste[i][0][0]+liste[i][1][0]+liste[i][2][0])/3
+            y = (liste[i][0][1]+liste[i][1][1]+liste[i][2][1])/3
+
+            main.canvas.create_image(x,y,image=cam)
 
 #-----Tri-Coloration-----#
 
@@ -431,8 +451,5 @@ def recurTricolor(index,indexb):
     for el in subliste:
         recurTricolor(el,index)
 
-
 #-----Initialisation-----#
-
-
 demarrer()
