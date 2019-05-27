@@ -24,6 +24,7 @@ from client import Network
 from _thread import *
 from tkinter import messagebox
 import queue
+from rpolygon import GPoly
 
 points = []
 global verif
@@ -286,88 +287,19 @@ def multiplayer():
 def gupdate(*args):
     g.update()
 
-
-def generate(index):
-    id = index
-    pt = []
-    for i in range(0,index):
-        pt.append((random.randint(1,width -1),random.randint(1,height - 1)))
-    if verifgen(pt):
-        print("PT", pt)
-        return pt
-    else :
-        return None
-
-
-def verifgen(pt):
-    var = True
-    liste = []
-    for el in pt:
-        liste.append(el)
-    print(liste)
-    seg = []
-    for i in range(len(liste)):
-        if i < len(liste) - 1:
-            seg.append((liste[i],liste[i+1]))
-        else:
-            seg.append((liste[i],liste[0]))
-
-    for j in range(len(seg)):
-        if j < len(seg) - 1:
-            for jb in range(len(seg)):
-                if seg[j] != seg[jb]:
-                    if intersection(seg[j][0][0],seg[j][0][1],seg[j][1][0],seg[j][1][1],seg[jb][0][0],seg[jb][0][1],seg[jb][1][0],seg[jb][1][1]):
-                        var = False
-                        return var
-    return var
-
-def intersection(xa1,ya1,xa2,ya2,xb1,yb1,xb2,yb2):
-    '''Vérifie la présence d'une intersection et renvoie les coordonnées'''
-
-    #Calculs des coeffs barycentriques de A1, A2, B1 et B2
-    coeff_a1 = ((xb2*ya2- xa2*yb2)+(xa2*yb1- xb1*ya2)+(xb1*yb2- xb2*yb1))/(
-        (xb2*ya2 - xa2*yb2)+(xa2*yb1 - xb1*ya2)+(xb1*yb2 - xb2*yb1)+
-        (xb1*ya1 - xa1*yb1)+(xa1*yb2 - xb2*ya1)+(xb2*yb1 - xb1*yb2))
-
-    coeff_a2 = ((xb1*ya1- xa1*yb1)+(xa1*yb2- xb2*ya1)+(xb2*yb1- xb1*yb2))/(
-        (xb2*ya2 - xa2*yb2)+(xa2*yb1 - xb1*ya2)+(xb1*yb2 - xb2*yb1)+
-        (xb1*ya1 - xa1*yb1)+(xa1*yb2 - xb2*ya1)+(xb2*yb1 - xb1*yb2))
-
-    coeff_b1 = ((xa2*yb2- xb2*ya2)+(xb2*ya1- xa1*yb2)+(xa1*ya2- xa2*ya1))/(
-        (xa2*yb2 - xb2*ya2)+(xb2*ya1 - xa1*yb2)+(xa1*ya2 - xa2*ya1)+
-        (xa1*yb1 - xb1*ya1)+(xb1*ya2 - xa2*yb1)+(xa2*ya1 - xa1*ya2))
-
-    coeff_b2 = ((xa1*yb1- xb1*ya1)+(xb1*ya2- xa2*yb1)+(xa2*ya1- xa1*ya2))/(
-        (xa2*yb2 - xb2*ya2)+(xb2*ya1 - xa1*yb2)+(xa1*ya2 - xa2*ya1)+
-        (xa1*yb1 - xb1*ya1)+(xb1*ya2 - xa2*yb1)+(xa2*ya1 - xa1*ya2))
-
-    if (coeff_a1 > 0)and (coeff_a2 > 0)and (coeff_b1 > 0)and (coeff_b2 > 0):
-        # Si un coeff est négatif, il n'y a pas d'intersection
-        #Calcul des coordonnées cartésiennes à partir des coeffs
-            #baryentriqueslorsqu'il y une intersectiond
-        return 1
-
-    else :
-        return 0
-
 #Fonction permettant de configurer une partie en mode aléatoire
 def randomg():
     global width,height,points
     print("Random g")
     main.fen2.destroy()
-
-    #RANDOMMMMMMMM
-
-    points = generate(6)
-    while points == None:
-        points = generate(6)
-
+    points = GPoly(6).generate(6)
     print("PT save : " ,points)
     for i in range(len(points)):
         x = points[i][0]
         y = points[i][1]
         main.canvas.create_oval(x - 8, y - 8, x+8, y+8, fill="red",tags=[('first' if len(points) == 1 else 'sec'),"pt"],width="2",)
         main.canvas.create_polygon(*points, fill='red',width=1,outline="black")
+    main.bouton_valider.config(state=NORMAL)
     startg()
 
 #Fonction permettant de configurer une partie en mode import
