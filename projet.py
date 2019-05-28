@@ -12,6 +12,7 @@ from tkinter import *
 import tkinter.filedialog
 import tkinter.colorchooser
 from math import *
+import math
 from time import *
 import time
 import os
@@ -265,6 +266,8 @@ def openb():
 
 #-----Triangulation-----#
 
+global cpt
+
 #Fonction renvoyant le point le plus à gauche du polygone
 def gauche(points):
     n = len(points)
@@ -289,7 +292,10 @@ def danstriangle(triangle,M):
     p1 = triangle[0]
     p2 = triangle[1]
     p3 = triangle[2]
+    global cpt
     return cotedroite(p1,p2,M) > 0 and cotedroite(p2,p3,M) > 0 and cotedroite(p3,p1,M) > 0
+
+
 
 #Fonction renvoyant l'indice du point étant le plus éloigné de p1 et p2 et étant dans le triangle
 def sommetmax(points,p0,p1,p2,index):
@@ -363,8 +369,22 @@ def drawT(liste):
             main.fen.update()
             time.sleep(1)
 
+
+
+def clockwise(polygon):
+    s = 0
+    polygon_count = len(polygon)
+    for i in range(polygon_count):
+        point = polygon[i]
+        point2 = polygon[(i + 1) % polygon_count]
+        s += (point2[0] - point[0]) * (point2[1] + point[1])
+    return s > 0
+
+
 #Fonction principale gérant la triangulation
 def trianguler():
+    if clockwise(points):
+        points.reverse()
     global triliste
     if len(points)>=4:
         start = perf_counter()

@@ -292,7 +292,7 @@ def randomg():
     global width,height,points
     print("Random g")
     main.fen2.destroy()
-    nb = 5
+    nb = 10
     points = GPoly(nb).generate(nb)
     print("PT save : " ,points)
     for i in range(len(points)):
@@ -344,12 +344,11 @@ def startg():
     for j in range (0,3):
         main.canvas.create_oval(bliste[0][j][0] - 8, bliste[0][j][1] - 8, bliste[0][j][0]+8,bliste[0][j][1]+8, fill=colors[j],tags=str(bliste[0][j][0])+","+str(bliste[0][j][1]),width="2")
         print("colorin",getColor(bliste[0][j]))
-    for x in range(2,len(bliste)):
+    for x in range(1,len(bliste)):
         for j in range (0,3):
             if not getColor(bliste[x][j]):
                 main.canvas.create_oval(bliste[x][j][0] - 8, bliste[x][j][1] - 8, bliste[x][j][0]+8,bliste[x][j][1]+8, fill="yellow",tags=str(bliste[x][j][0])+","+str(bliste[x][j][1]),width="2")
                 main.canvas.tag_bind((str(bliste[x][j][0])+","+str(bliste[x][j][1])), "<Button-1>",clickbb)
-
 
 #Fonction permettant de demarrer une partie après l'import bis
 def startgb():
@@ -361,7 +360,7 @@ def startgb():
         bliste2.append(el)
     for j in range (0,3):
         main.canvas2.create_oval(bliste2[0][j][0] - 8, bliste2[0][j][1] - 8, bliste2[0][j][0]+8,bliste2[0][j][1]+8, fill=colors[j],tags=str(bliste2[0][j][0])+","+str(bliste2[0][j][1]),width="2")
-    for x in range(2,len(bliste2)):
+    for x in range(1,len(bliste2)):
         for j in range (0,3):
             if not getColorb(bliste2[x][j]):
                 main.canvas2.create_oval(bliste2[x][j][0] - 8, bliste2[x][j][1] - 8, bliste2[x][j][0]+8,bliste2[x][j][1]+8, fill="yellow",tags=str(bliste2[x][j][0])+","+str(bliste2[x][j][1]),width="2")
@@ -542,8 +541,19 @@ def drawT(liste):
         main.canvas.create_line(triangle[0][0],triangle[0][1],triangle[2][0],triangle[2][1], tags="triangl", width= 1)
         main.canvas.create_line(triangle[1][0],triangle[1][1],triangle[2][0],triangle[2][1], tags="triangl", width= 1)
 
+def clockwise(polygon):
+    s = 0
+    polygon_count = len(polygon)
+    for i in range(polygon_count):
+        point = polygon[i]
+        point2 = polygon[(i + 1) % polygon_count]
+        s += (point2[0] - point[0]) * (point2[1] + point[1])
+    return s > 0
+
 #Fonction principale gérant la triangulation
 def trianguler():
+    if clockwise(points):
+        points.reverse()
     global triliste
     if len(points)>=4:
         start = perf_counter()
