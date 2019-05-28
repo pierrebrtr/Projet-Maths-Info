@@ -292,7 +292,8 @@ def randomg():
     global width,height,points
     print("Random g")
     main.fen2.destroy()
-    points = GPoly(6).generate(6)
+    nb = 5
+    points = GPoly(nb).generate(nb)
     print("PT save : " ,points)
     for i in range(len(points)):
         x = points[i][0]
@@ -372,9 +373,7 @@ def clickbb(event):
     x = event.x
     y = event.y
     el = main.canvas.find_closest(x,y)
-
     color = main.canvas.itemcget(el, "fill")
-
     if(color == "yellow"):
         color = sommet1
     elif(color == sommet1):
@@ -445,10 +444,6 @@ def validateb():
             os.system('python menu.py')
     else :
         messagebox.showinfo("Perdu", "Hum, il me semble que cela ne soit pas la bonne réponse")
-
-
-
-
 
 #-----Triangulation-----#
 

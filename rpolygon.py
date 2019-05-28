@@ -1,3 +1,8 @@
+###################################################################
+#Script	: Génération d'une liste de points aléatoire
+#Details : Ce script permet de générer un polygone convexe en sortie
+#Auteurs : Paul Lefay et Pierre Bertier
+###################################################################
 from math import *
 import math
 import random
@@ -19,7 +24,7 @@ class GPoly():
             xc = xc + x[i]
             yc = yc + y[i]
         xc = xc/n
-        yc = yc / n
+        yc = yc/n
         center = (xc,yc)
         angles = []
         for i in range(n):
@@ -32,6 +37,5 @@ class GPoly():
         return m
 
     def merge(self,list1, list2):
-
         merged_list = [(list1[i], list2[i]) for i in range(0, len(list1))]
         return merged_list
