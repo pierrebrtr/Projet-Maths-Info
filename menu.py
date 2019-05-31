@@ -1,3 +1,8 @@
+###################################################################
+#Script	: Menu
+#Auteurs : Paul Lefay et Pierre Bertier
+###################################################################
+
 from tkinter import *
 import tkinter as tk
 from math import *

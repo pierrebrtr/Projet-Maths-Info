@@ -541,18 +541,18 @@ def drawT(liste):
         main.canvas.create_line(triangle[0][0],triangle[0][1],triangle[2][0],triangle[2][1], tags="triangl", width= 1)
         main.canvas.create_line(triangle[1][0],triangle[1][1],triangle[2][0],triangle[2][1], tags="triangl", width= 1)
 
-def clockwise(polygon):
+def clock(polygon):
     s = 0
-    polygon_count = len(polygon)
-    for i in range(polygon_count):
+    n = len(polygon)
+    for i in range(n):
         point = polygon[i]
-        point2 = polygon[(i + 1) % polygon_count]
+        point2 = polygon[(i + 1) % n]
         s += (point2[0] - point[0]) * (point2[1] + point[1])
     return s > 0
 
 #Fonction principale gérant la triangulation
 def trianguler():
-    if clockwise(points):
+    if clock(points):
         points.reverse()
     global triliste
     if len(points)>=4:

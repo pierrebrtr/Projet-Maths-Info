@@ -371,19 +371,19 @@ def drawT(liste):
 
 
 
-def clockwise(polygon):
+def clock(polygon):
     s = 0
-    polygon_count = len(polygon)
-    for i in range(polygon_count):
+    n = len(polygon)
+    for i in range(n):
         point = polygon[i]
-        point2 = polygon[(i + 1) % polygon_count]
+        point2 = polygon[(i + 1) % n]
         s += (point2[0] - point[0]) * (point2[1] + point[1])
     return s > 0
 
 
 #Fonction principale gérant la triangulation
 def trianguler():
-    if clockwise(points):
+    if clock(points):
         points.reverse()
     global triliste
     if len(points)>=4:
@@ -395,6 +395,7 @@ def trianguler():
         main.bouton_chiffre.config(state=NORMAL)
         main.bouton_camera.config(state=NORMAL)
         main.bouton_coloration.config(state=NORMAL)
+    print("Il faut ", len(triliste), " gardes pour surveiller la zone")
 
 #Fonction affichant l'index du triangle sur le triangle
 def chiffre():
