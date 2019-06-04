@@ -211,6 +211,8 @@ def drag2(event):
         if triangulet:
             main.canvas.delete("triangl")
             trianguler()
+            main.canvas.lower("triangl")
+            main.canvas.lower("polygone")
 
 
 def drag3(event):
@@ -311,6 +313,7 @@ def openb():
                 main.canvas.unbind("<Motion>")
                 main.canvas.delete("line2")
                 main.bouton_trianguler.config(state=NORMAL)
+                main.canvas.lower("polygone")
                 print("POINTS",points)
 
 #-----Triangulation-----#
@@ -434,6 +437,7 @@ global triangulet
 
 #Fonction principale gérant la triangulation
 def trianguler():
+
     global triangulet
     triangulet = True
     if clock(points):
@@ -449,6 +453,8 @@ def trianguler():
         main.bouton_camera.config(state=NORMAL)
         main.bouton_coloration.config(state=NORMAL)
     print("Il faut ", len(triliste), " gardes pour surveiller la zone")
+    main.canvas.tag_raise("sec")
+    main.canvas.tag_raise("first")
 
 #Fonction affichant l'index du triangle sur le triangle
 def chiffre():
