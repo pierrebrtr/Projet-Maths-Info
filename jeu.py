@@ -292,7 +292,7 @@ def randomg():
     global width,height,points
     print("Random g")
     main.fen2.destroy()
-    nb = 10
+    nb = 6
     points = GPoly(nb).generate(nb)
     print("PT save : " ,points)
     for i in range(len(points)):
