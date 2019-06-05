@@ -1,5 +1,5 @@
 ###################################################################
-#Script	: Menu
+#Script	: Editeur de polygones + triangulation + tricoloration
 #Auteurs : Paul Lefay et Pierre Bertier
 ###################################################################
 

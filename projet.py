@@ -155,7 +155,8 @@ def point(event):
     if(len(points) >= 2):
         main.canvas.create_line(points, tags="line", width= 1)
         main.canvas.tag_lower("line")
-    main.canvas.create_oval(event.x - 8, event.y - 8, event.x+8, event.y+8, fill="red",tags=[('first' if len(points) == 1 else 'sec'),"pt",(event.x,event.y)],width="2",)
+    main.canvas.create_oval(event.x - 8, event.y - 8, event.x+8, event.y+8, fill="red",tags=[('first' if len(points) == 1 else 'sec'),str(len(points) - 1)],width="2",)
+    print("ADDED : ", str(len(points) - 1))
     main.canvas.create_line(event.x,event.y,event.x +1,event.y + 1,fill="blue", width= 1,tags="line2")
     main.canvas.tag_bind("first","<Button-1>",polygon)
     return points
@@ -179,17 +180,25 @@ global ib
 
 
 
+def find_pts(id):
+    element = None
+    for i in range (len(main.canvas.find_all())):
+        if str(id) in main.canvas.gettags(main.canvas.find_all()[i]):
+            element = main.canvas.find_all()[i]
+    return element
+
+
 def drag1(event):
     global dragged
-    el = main.canvas.find_closest(event.x, event.y)
-    cb = main.canvas.coords(el)
-    xb = int(cb[0] + 8)
-    yb = int(cb[1] + 8)
+    x = event.x
+    y = event.y
     global ib
     for i in range(len(points)):
-        if (xb,yb) == points[i]:
+        if abs(points[i][0] - x) <= 8 and abs(points[i][1] - y) <= 8:
             ib = i
+            print("ID : ",ib)
     dragged = 1
+    el = find_pts(ib)
     main.canvas.tag_bind(el,"<Motion>",drag2)
     main.canvas.tag_bind(el,"<ButtonRelease-1>",drag3)
 
@@ -199,14 +208,14 @@ def drag2(event):
     global triangulet
     x = event.x
     y = event.y
-    el = main.canvas.find_closest(x, y)
+    el = find_pts(ib)
     if dragged != 0:
         main.canvas.coords(el, x - 8, y - 8, x + 8, y + 8)
         cb = main.canvas.coords(el)
         xb = int(cb[0] + 8)
         yb = int(cb[1] + 8)
         main.canvas.delete("polygone")
-        points[ib] = (xb,yb)
+        points[ib] = (x,y)
         polygon(event)
         if triangulet:
             main.canvas.delete("triangl")
